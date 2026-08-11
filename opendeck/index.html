@@ -1,0 +1,2105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <!-- opendeck-ui-v3 20260812-040240 -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Open Deck DJ School</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Unbounded:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-main:#2b302e;
+      --text-primary:#ffffff;
+      --text-secondary:#c0a0a8;
+      --accent-mint:#8ce2c8;
+      --accent-coral:#f5926e;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    /* Доступность: видимый фокус на всех интерактивных элементах (HIGH) */
+    :focus-visible{outline:2px solid var(--accent-mint);outline-offset:2px;border-radius:6px}
+    button:focus-visible,.m-btn:focus-visible,.lesson:focus-visible,
+    .dash-head:focus-visible,.nav button:focus-visible,.play-deck:focus-visible,
+    .upgrade-link:focus-visible,.cta-inline .btn:focus-visible{outline:2px solid var(--accent-mint);outline-offset:2px}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:'Inter',sans-serif;color:var(--text-primary);
+      background:var(--bg-main);
+      min-height:100vh;
+      min-height:100dvh;
+      padding-bottom:calc(env(safe-area-inset-bottom) + 84px);
+      -webkit-font-smoothing:antialiased;
+    }
+    h1,h2,h3{font-family:'Unbounded',sans-serif;margin:0}
+    .wrap{padding:calc(env(safe-area-inset-top) + 20px) 18px 28px;max-width:520px;margin:0 auto}
+
+    /* ---- Dashboard ---- */
+    /* ---- Компактный хедер ---- */
+    .dash-head{
+      display:flex;align-items:center;gap:14px;margin-bottom:14px;
+      padding:12px 16px;background:rgba(255,255,255,0.03);border-radius:18px;
+      border:1px solid rgba(255,255,255,0.06);
+      animation:heroIn .5s cubic-bezier(.34,1.4,.64,1) both}
+    .dash-head .user-avatar{width:44px;height:44px;flex:none;background-size:cover;background-position:center;background-repeat:no-repeat}
+    .dash-head .dash-info{flex:1;min-width:0}
+    .dash-head .dash-name{font-family:'Unbounded',sans-serif;font-weight:700;font-size:17px;color:var(--text-primary);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .dash-head .dash-meta{display:flex;flex-wrap:wrap;column-gap:8px;row-gap:3px;font-size:12px;color:var(--text-secondary);align-items:center}
+    .dash-head .dash-meta .gp-v{color:var(--accent-mint);font-weight:700}
+    .dash-head .dash-meta .dot{opacity:.35}
+    .dash-head .dash-meta .st{font-weight:600;color:var(--text-primary)}
+    .user-avatar{width:44px;aspect-ratio:1;border-radius:50%;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.08);color:var(--text-secondary);font-weight:600;font-size:16px;flex:none}
+    .gp{
+      display:flex;align-items:center;gap:8px;background:rgba(140,226,200,0.10);
+      border:1px solid rgba(140,226,200,0.25);border-radius:16px;padding:12px 16px;margin-bottom:18px}
+    .gp .diamond{width:20px;height:20px;color:var(--accent-mint);
+      animation:spinSoft 9s linear infinite;transform-origin:50% 55%}
+    @keyframes spinSoft{0%{transform:rotate(0)}50%{transform:rotate(12deg)}100%{transform:rotate(0)}}
+    .gp .bal{color:var(--accent-mint);font-weight:700;font-size:16px}
+    .gp .lbl{color:var(--text-secondary);font-size:13px}
+
+    .hero{
+      border-radius:22px;padding:26px 22px 22px;margin-bottom:16px;
+      background:linear-gradient(135deg,rgba(245,146,110,0.30),rgba(140,226,200,0.18));
+      border:1px solid rgba(140,226,200,0.22)} /* APPLE: hero — рамка ярче, выделяется как главная зона */
+    /* APPLE: убрана бесконечная пульсация hero (heroPulse) — фокус не должен дёргаться */
+    /* ---- Анимации: шиммер, свечение, качание ---- */
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    @keyframes sway{0%,100%{transform:rotate(0deg) translateY(0)}33%{transform:rotate(.6deg) translateY(-1px)}66%{transform:rotate(-.5deg) translateY(-1px)}}
+    .shim{position:relative;overflow:hidden}
+    .shim::after{content:'';position:absolute;inset:0;pointer-events:none;
+      background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.06) 50%,transparent 100%);
+      background-size:200% 100%;animation:shimmer 5s ease-in-out infinite}
+    /* APPLE: каскад появления дашборда — элементы выезжают не разом,
+       а по очереди (stagger), создавая ощущение «сборки» интерфейса */
+    .dash-head{animation-delay:.02s}
+    .quote{animation-delay:.10s}
+    .manifest{animation-delay:.18s}
+    .hero{animation-delay:.26s}
+    .dash-head.shim::after{border-radius:18px}
+    .hero.shim::after{border-radius:22px}
+    .free.shim::after{border-radius:16px}
+    .hero .hero-progress-num .st{display:inline-block;color:var(--accent-mint)}
+    /* APPLE: sway на кнопках манифеста УБРАН — декоративная анимация рассеивала фокус.
+       Оставлен отклик на hover/press (смысловой), без бесконечного покачивания. */
+    .m-row .m-btn:hover{animation-play-state:paused;transform:translateY(-2px)}
+    .m-panel{transition:max-height .55s cubic-bezier(.25,.46,.45,.94),opacity .4s ease,margin .3s ease,padding .3s ease,box-shadow .3s}
+    .m-panel.open{box-shadow:0 0 24px rgba(140,226,200,0.06)}
+    .hero .tag{font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.06em}
+    .hero .hero-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+    .hero .hero-meta{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+    /* APPLE: цифра прогресса уменьшена — фокус на уроке, не на счётчике */
+    .hero .hero-progress-num{font-family:'Unbounded',sans-serif;font-weight:800;font-size:38px;color:var(--text-primary);line-height:1;flex:none}
+    .hero .hero-progress-num .st{color:var(--accent-mint);display:inline-block}
+    .hero .hero-progress-num .of{font-size:18px;font-weight:600;color:var(--text-secondary);opacity:.6;vertical-align:super}
+    .hero-title-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+    .hero-title-row h2{flex:1 1 auto;margin:0;min-width:0}
+    /* цифра прогресса — справа, НЕ слипается с заголовком при переносе */
+    .hero .hero-progress-num{margin-left:10px}
+    /* APPLE: заголовок и цифра выровнены по ЦЕНТРУ, не по верху — убирает «висящую» последнюю строку */
+    .hero .hero-progress-num{flex:none;align-self:center;text-align:right;line-height:1}
+    /* APPLE: заголовок урока — главный фокус (крупнее, чем цифра) */
+    .hero h2{font-size:23px;margin:8px 0 6px;line-height:1.28}
+    .hero-duration{font-size:11px;color:var(--text-secondary);opacity:.65;margin:0 0 4px;letter-spacing:.02em}
+    .progress{height:10px;border-radius:999px;background:rgba(255,255,255,0.16);overflow:hidden;margin-bottom:18px}
+    .progress > i{display:block;height:100%;background:var(--accent-mint);border-radius:999px;transition:width .6s ease}
+    .btn{
+      width:100%;border:0;border-radius:999px;background:var(--accent-coral);color:#1c201e;
+      /* фокус-кольцо для клавиатурной навигации (HIGH a11y) */
+      outline:none;
+      -webkit-tap-highlight-color:transparent}
+      font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;padding:14px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s ease;
+      animation:heroIn .5s cubic-bezier(.34,1.4,.64,1) both}
+    @keyframes heroIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .btn:hover{transform:translateY(-2px)}
+    .btn:active{transform:scale(.97)}
+    .btn.mint{background:var(--accent-mint);color:#1c201e}
+    .btn.ghost{background:rgba(255,255,255,0.08);color:var(--text-primary)}
+    .btn.alt{background:linear-gradient(135deg,#8ce2c8,#f5926e);color:#1c201e}
+
+    /* ---- APPLE/DECK: большая круглая Play-кнопка как на диджейской деке ---- */
+    .play-deck{
+      width:112px;height:112px;border-radius:50%;border:0;cursor:pointer;
+      background:radial-gradient(circle at 32% 28%, rgba(255,255,255,0.35), var(--accent-coral) 62%, rgba(0,0,0,0.18));
+      box-shadow:0 0 60px rgba(245,146,110,0.55), 0 10px 34px rgba(245,146,110,0.5), inset 0 -5px 14px rgba(0,0,0,0.28), inset 0 4px 10px rgba(255,255,255,0.35);
+      display:flex;align-items:center;justify-content:center;
+      margin:0 auto;position:relative;
+      transition:transform .12s ease, box-shadow .2s ease;
+      -webkit-tap-highlight-color:transparent}
+    .play-deck svg{width:56px;height:56px;fill:#fff;margin-left:8px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))}
+    /* мгновенный отклик на pointer-down — как нажатие физической кнопки деки */
+    .play-deck:active{transform:scale(.93);box-shadow:0 0 40px rgba(245,146,110,0.65), 0 4px 14px rgba(245,146,110,0.45), inset 0 2px 8px rgba(0,0,0,0.35)}
+    .play-deck-wrap{text-align:center;padding:18px 0 6px}
+    .play-deck-label{font-size:13px;color:var(--text-primary);font-weight:600;margin-top:14px;letter-spacing:.01em}
+    /* ссылка на Upgrade под кнопкой — спокойная, не конкурирует с Play */
+    .upgrade-link{display:inline-block;margin-top:16px;font-size:13px;color:var(--accent-mint);
+      text-decoration:none;border-bottom:1px solid rgba(140,226,200,0.35);padding-bottom:1px;cursor:pointer;
+      transition:color .2s,border-color .2s}
+    .upgrade-link:hover{color:#a5f0d8;border-color:rgba(140,226,200,0.6)}
+    /* блок «что дают GP» — компактный, объясняет ценность очков */
+    .gp-value{margin-top:16px;padding:13px 15px;background:rgba(140,226,200,0.07);
+      border:1px solid rgba(140,226,200,0.18);border-radius:14px;font-size:12.5px;
+      color:var(--text-secondary);line-height:1.55;text-align:center}
+    .gp-value b{color:var(--accent-mint)}
+    /* микро-подсказка на экране (вместо всплывающих тултипов) */
+    .micro-hint{margin-top:12px;padding:9px 12px;background:rgba(140,226,200,0.06);
+      border:1px solid rgba(140,226,200,0.16);border-radius:10px;font-size:11.5px;
+      color:var(--text-secondary);line-height:1.5}
+    .micro-hint b{color:var(--accent-mint)}
+    /* inline CTA-блок после урока 1 (вместо попапа) */
+    .cta-inline{margin-top:14px;padding:14px 16px;border-radius:14px;
+      background:linear-gradient(135deg,rgba(245,146,110,0.10),rgba(140,226,200,0.08));
+      border:1px solid rgba(140,226,200,0.22)}
+    .cta-inline .t{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px}
+    .cta-inline .row{display:flex;gap:10px;flex-wrap:wrap}
+    .cta-inline .row .btn{font-size:13px;padding:9px 16px;width:auto}
+    /* APPLE: hero теперь центрирован — кнопка и подписи по центру, воздух вокруг */
+    .hero{ text-align:center }
+    .hero .hero-head{ text-align:left }
+    .hero-title-row{ text-align:left }
+    .hero-duration{ text-align:left; margin-top:2px }
+    .hero .progress{ margin:14px 0 4px }
+
+    /* ---- Манифест: кнопки по горизонтали + дроп-панель ---- */
+    .manifest{margin-bottom:14px}
+    .m-row{
+      display:flex;gap:8px;margin-bottom:0;
+      animation:heroIn .5s cubic-bezier(.34,1.4,.64,1) both}
+    .m-row .m-btn{
+      flex:1;font-family:'Unbounded',sans-serif;font-weight:800;font-size:12px;letter-spacing:.03em;
+      padding:12px 10px;border-radius:999px;background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+      transition:background .25s,border-color .25s,transform .2s,box-shadow .3s;user-select:none;
+      white-space:nowrap;min-width:0;
+      -webkit-tap-highlight-color:transparent}
+    .m-row .m-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,0.09)}
+    /* APPLE: мгновенный отклик на pointer-down (не ждём release) — highlight + scale сразу */
+    .m-row .m-btn:active{transform:scale(.96);background:rgba(255,255,255,0.10)}
+    .m-row .m-btn .arr{transition:transform .35s ease;font-size:10px;opacity:.6}
+    .m-row .m-btn.open .arr{transform:rotate(180deg)}
+    .m-row .m-btn:nth-child(1){color:var(--accent-coral)!important;border-color:rgba(245,146,110,0.25)}
+    .m-row .m-btn:nth-child(1).open,
+    .m-row .m-btn:nth-child(1):hover{background:rgba(245,146,110,0.12);border-color:rgba(245,146,110,0.45);box-shadow:0 0 20px rgba(245,146,110,0.08)}
+    .m-row .m-btn:nth-child(2){color:var(--text-secondary)!important;border-color:rgba(192,160,168,0.2)}
+    .m-row .m-btn:nth-child(2).open,
+    .m-row .m-btn:nth-child(2):hover{background:rgba(192,160,168,0.12);border-color:rgba(192,160,168,0.3);box-shadow:0 0 20px rgba(192,160,168,0.08)}
+    .m-row .m-btn:nth-child(3){color:var(--accent-mint)!important;border-color:rgba(140,226,200,0.25)}
+    .m-row .m-btn:nth-child(3).open,
+    .m-row .m-btn:nth-child(3):hover{background:rgba(140,226,200,0.12);border-color:rgba(140,226,200,0.45);box-shadow:0 0 20px rgba(140,226,200,0.08)}
+    .m-panel{
+      overflow:hidden;max-height:0;opacity:0;margin-top:0;
+      transition:max-height .55s cubic-bezier(.25,.46,.45,.94),opacity .4s ease,margin .3s ease,padding .3s ease;
+      background:rgba(255,255,255,0.02);border-radius:16px;
+      border:1px solid transparent;line-height:1.65;font-size:13px;color:var(--text-secondary)}
+    .m-panel.open{max-height:420px;opacity:1;margin-top:10px;padding:18px 18px;
+      border-color:rgba(255,255,255,0.05)}
+    .m-panel .mt{font-weight:600;color:var(--text-primary);font-size:14px;margin-bottom:8px;display:block}
+    .quote{
+      font-size:14px;line-height:1.65;color:var(--text-secondary);text-align:center;
+      margin:0 0 14px;padding:16px 20px;
+      background:rgba(255,255,255,0.02);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,0.04)} /* APPLE: приглушена — второстепенная, тише hero */
+    .quote .qm{color:var(--accent-coral);font-weight:500;margin-top:14px;font-size:14px}
+    .quote .ql{color:var(--accent-mint);font-family:'Unbounded',sans-serif;font-weight:800;font-size:18px;margin-bottom:10px;letter-spacing:.02em}
+    /* ---- Сворачиваемая цитата-философия: заголовок = тапабельная шапка, тело прячется ---- */
+    .quote{padding:0;overflow:hidden;cursor:pointer;transition:border-color .2s}
+    .quote-head{display:flex;align-items:center;gap:8px;padding:7px 14px}
+    .quote-head .ql{margin-bottom:0;flex:1;min-width:0;font-size:26px;line-height:1.18;overflow:hidden}
+    .quote-head .ql-sub{display:block;font-size:13px;font-weight:400;color:var(--text-secondary);margin-top:1px;letter-spacing:.02em;opacity:.7}
+    .quote-head .qarr{font-size:11px;opacity:.55;color:var(--accent-mint);transition:transform .3s ease;flex:none;
+      display:inline-block;transform:rotate(-90deg);width:14px;text-align:center}
+    .quote.open .quote-head .qarr{transform:rotate(0deg)}
+    .quote-body{max-height:0;opacity:0;overflow:hidden;transition:max-height .45s cubic-bezier(.25,.46,.45,.94),opacity .35s ease,padding .25s ease;
+      padding:0 14px;text-align:center;font-size:13px}
+    .quote.open .quote-body{max-height:168px;opacity:1;padding:0 14px 8px}
+    /* мгновенный отклик на pointer-down для шапки цитаты */
+    .quote:active{border-color:rgba(140,226,200,0.25)}
+    .stat{display:flex;gap:10px;margin-bottom:14px}
+    .stat .card{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.06);
+      border-radius:16px;padding:14px;text-align:center;
+      animation:heroIn .5s cubic-bezier(.34,1.4,.64,1) both}
+    .stat .card:nth-child(1){animation-delay:.05s}
+    .stat .card:nth-child(2){animation-delay:.13s}
+    .stat .card:nth-child(3){animation-delay:.21s}
+    .stat .card .n{font-family:'Unbounded';font-weight:800;font-size:20px;color:var(--accent-mint)}
+    .stat .card .l{font-size:11px;color:var(--text-secondary);margin-top:2px}
+    .free{display:flex;align-items:center;gap:12px;background:rgba(140,226,200,0.10);
+      border:1px solid rgba(140,226,200,0.25);border-radius:16px;padding:14px;margin-bottom:14px;
+      animation:heroIn .5s cubic-bezier(.34,1.4,.64,1) both}
+    .free .ic{width:38px;height:38px;color:var(--accent-mint);flex:none}
+    .free .t{font-size:13px;line-height:1.4}
+    .free .t b{color:var(--text-primary)}
+
+    /* ---- Ценность: маркетинг-сетка на главном (почему учиться) ---- */
+    .value-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+    .value-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+      border-radius:16px;padding:13px 12px;text-align:center;
+      animation:heroIn .5s cubic-bezier(.34,1.4,.64,1) both}
+    .value-grid .value-card:nth-child(1){animation-delay:.30s}
+    .value-grid .value-card:nth-child(2){animation-delay:.36s}
+    .value-grid .value-card:nth-child(3){animation-delay:.42s}
+    .value-card .value-ic{font-size:24px;line-height:1;margin-bottom:7px}
+    .value-card .value-t{font-family:'Unbounded',sans-serif;font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:4px}
+    .value-card .value-d{font-size:11px;line-height:1.4;color:var(--text-secondary)}
+
+    /* ---- Отзывчивость на тап: scale(0.96) для главных CTA ---- */
+    .btn:active{transform:scale(.96)}           /* было .97 — приводим к 0.96 по better-ui */
+    .play-deck:active{transform:scale(.96);box-shadow:0 0 40px rgba(245,146,110,0.65), 0 4px 14px rgba(245,146,110,0.45), inset 0 2px 8px rgba(0,0,0,0.35)}  /* было .93 */
+    .team-share:active{transform:scale(.98);background:rgba(140,226,200,0.14)}
+
+    /* ---- Course list ---- */
+    .lesson{
+      display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.05);
+      border-radius:16px;padding:14px 16px;margin-bottom:10px;cursor:pointer;
+      border:1px solid transparent;transition:border-color .2s, transform .25s ease, box-shadow .3s;
+      animation:lessonIn .45s cubic-bezier(.34,1.4,.64,1) both}
+    /* появление по очереди */
+    @keyframes lessonIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .lesson:hover{transform:translateY(-2px)}
+    /* APPLE: мгновенный отклик на pointer-down — подсветка при касании, не только при отпускании */
+    .lesson:active{border-color:rgba(140,226,200,0.35);transform:scale(.99)}
+    .lesson.active{border-color:var(--accent-coral);box-shadow:0 0 18px rgba(245,146,110,0.25);
+      animation:lessonSway 3.4s ease-in-out infinite}
+    /* лёгкое покачивание активного урока */
+    @keyframes lessonSway{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+    .lesson.done{opacity:.72}
+    .lesson .num{
+      width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.10);
+      display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none;
+      transition:background .25s, color .25s}
+    .lesson.done .num{background:var(--accent-mint);color:#1c201e}
+    .lesson .ttl{font-size:17px;font-weight:600;flex:1;line-height:1.25;color:var(--text-primary)}
+    .lesson .ttl .sub{display:block;font-size:12px;font-weight:400;color:var(--accent-mint);margin-top:2px}
+    .lesson.locked{opacity:.62;cursor:default}
+    .lesson .lock{width:18px;height:18px;color:var(--text-secondary);flex:none}
+    .lesson .ttl .hint{display:block;font-size:11px;font-weight:400;color:var(--text-secondary);margin-top:2px}
+    .check{width:18px;height:18px;color:var(--accent-mint);flex:none}
+    @media (prefers-reduced-motion:reduce){
+      .lesson,.lesson.active{animation:none}
+      .lesson:hover{transform:none}}
+    /* APPLE: отключаем анимации на LOW-устройствах (User-Agent performance class) */
+    body.reduce-motion .shim::after{animation:none !important;display:none}
+    body.reduce-motion .sway,.reduce-motion [class*="sway"]{animation:none !important}
+    body.reduce-motion .gp .diamond{animation:none !important}
+
+    /* ---- Мобильная адаптация ---- */
+    @media (max-width:480px){
+      .wrap{padding:calc(env(safe-area-inset-top) + 14px) 14px 12px}
+      .dash-head{padding:10px 14px;gap:12px}
+      .dash-head .user-avatar{width:38px;height:38px}
+      .dash-head .dash-name{font-size:16px}
+      .dash-head .dash-meta{font-size:11px;column-gap:6px}
+      .quote{padding:10px 14px;font-size:13px}
+      .quote .ql{font-size:21px}
+      .hero{padding:16px}
+      .hero-title-row{gap:8px}
+      /* APPLE: на мобиле заголовок урока — ГЛАВНЫЙ фокус, крупнее цифры */
+      .hero h2{font-size:22px}
+      .hero .hero-progress-num{font-size:20px}
+      .hero .hero-progress-num .of{font-size:13px}
+      .hero-duration{font-size:10px;margin:-8px 0 12px}
+      .m-row .m-btn{font-size:11px;padding:10px 8px;gap:4px}
+      .m-panel.open{padding:14px 14px;font-size:12px}
+      .btn{font-size:14px;padding:13px}
+      .free{padding:12px 14px;gap:10px}
+      .free .ic{width:32px;height:32px}
+      .free .t{font-size:12px}
+    }
+    @media (max-width:360px){
+      .dash-head .dash-meta{font-size:10px;column-gap:4px;row-gap:2px}
+      .dash-head .dash-name{font-size:14px}
+      .quote{padding:8px 10px;font-size:12px}
+      .quote .ql{font-size:18px}
+      .hero{padding:14px}
+      .hero-title-row{gap:6px}
+      .hero h2{font-size:20px}
+      .hero .hero-progress-num{font-size:18px}
+      .hero .hero-progress-num .of{font-size:12px}
+      .hero-duration{font-size:11px;margin:-6px 0 10px}
+      .m-row .m-btn{font-size:10px;padding:8px 6px}
+      .m-panel.open{padding:12px 12px;font-size:11px}
+      .btn{font-size:13px;padding:11px}
+      .free{padding:10px 12px}
+      .free .ic{width:28px;height:28px}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .shim::after{animation:none!important}
+      .m-row .m-btn{animation:none!important}
+      .hero .hero-progress-num .st{animation:none!important}
+      .hero{animation:none!important}
+      .dash-head{animation:none!important}}
+
+    .player{width:100%;aspect-ratio:16/9;background:#1c201e;border-radius:16px;
+      display:flex;align-items:center;justify-content:center;color:var(--text-secondary);margin-bottom:14px}
+    .player .play{width:54px;height:54px;color:var(--accent-coral)}
+    .summary{color:var(--text-secondary);font-size:14px;line-height:1.6;margin:0 0 18px;padding-left:18px}
+    .summary li{margin-bottom:6px}
+
+    /* ---- Upgrade ---- */
+    .offer{
+      border-radius:22px;padding:22px;margin-bottom:16px;
+      background:linear-gradient(160deg,#1c201e,#2b302e);border:1px solid rgba(245,146,110,0.30)}
+    .offer .pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;
+      text-transform:uppercase;color:var(--accent-coral);margin-bottom:10px}
+    .offer h2{font-size:21px;margin-bottom:14px}
+    .price{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+    .price del{color:var(--text-secondary);font-size:15px}
+    .price .disc{color:var(--accent-mint);font-size:13px;font-weight:600}
+    .price .final{font-family:'Unbounded';font-weight:800;font-size:34px;color:var(--accent-coral)}
+    .seats{color:var(--text-secondary);font-size:13px;margin-bottom:16px}
+    .incl{margin:0 0 16px;padding:0;list-style:none}
+    .incl li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;
+      color:var(--text-primary);padding:9px 0;border-top:1px solid rgba(255,255,255,0.07)}
+    .incl li:first-child{border-top:0}
+    .incl .ic{width:18px;height:18px;color:var(--accent-mint);flex:none;margin-top:1px}
+    .incl b{color:var(--accent-mint);font-weight:600}
+    .sessions{display:flex;flex-direction:column;gap:8px;margin:0 0 16px}
+    .sess{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:12px 14px}
+    .sess .n{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;
+      justify-content:center;font-family:'Unbounded';font-weight:800;font-size:13px;
+      background:rgba(245,146,110,0.18);color:var(--accent-coral)}
+    .sess .tt{font-size:14px;font-weight:500}
+    .sess .ds{font-size:12px;color:var(--text-secondary)}
+
+    /* ---- Profile ---- */
+    .prof-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+    .avatar{width:56px;height:56px;border-radius:50%;background:rgba(192,160,168,0.25);
+      display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-weight:700;font-size:20px;flex:none}
+    .prof-head .nm{font-family:'Unbounded';font-weight:700;font-size:18px}
+
+    /* ---- Профиль: карточка ---- */
+    .prof-card{text-align:center;padding:28px 20px 24px;position:relative;overflow:hidden;
+      background:linear-gradient(180deg,rgba(245,146,110,0.08) 0%,rgba(140,226,200,0.04) 50%,transparent 100%);
+      border-radius:22px;border:1px solid rgba(255,255,255,0.06);margin-bottom:16px}
+    /* APPLE: shimmer-блик с профиля УБРАН — карточка и так нарядная, блик перегружал */
+    .prof-avatar-wrap{position:relative;display:inline-block;margin-bottom:0}
+
+    .prof-avatar{width:110px;height:110px;border-radius:50%;font-size:40px;font-weight:700;margin:0 auto;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,0.08);color:var(--text-secondary);
+      border:2px solid var(--accent-mint);overflow:hidden; /* APPLE: убрано свечение — чистая обводка */
+      background-size:cover;background-position:center;background-repeat:no-repeat;
+      position:relative;z-index:1}
+    .prof-badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+      padding:6px 16px;border-radius:999px;background:linear-gradient(135deg,rgba(140,226,200,0.15),rgba(245,146,110,0.10));
+      border:1px solid rgba(140,226,200,0.30);box-shadow:0 0 12px rgba(140,226,200,0.06)}
+    .prof-badge .ico{font-size:15px;line-height:1}
+    .prof-badge .txt{font-size:12px;font-weight:600;color:var(--accent-mint);letter-spacing:.02em}
+    .prof-name{font-family:'Unbounded',sans-serif;font-weight:700;font-size:20px;margin-top:10px;color:var(--text-primary)}
+    .prof-stats{display:flex;gap:10px;margin-top:18px}
+    .prof-stat{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);
+      border-radius:16px;padding:14px 8px;text-align:center;
+      animation:heroIn .45s cubic-bezier(.34,1.4,.64,1) both}
+    .prof-stat:nth-child(1){border-color:rgba(140,226,200,0.20);animation-delay:.05s}
+    .prof-stat:nth-child(2){border-color:rgba(245,146,110,0.20);animation-delay:.13s}
+    .prof-stat:nth-child(3){border-color:rgba(192,160,168,0.20);animation-delay:.21s}
+    .prof-stat .n{font-family:'Unbounded',sans-serif;font-weight:800;font-size:22px;color:var(--accent-mint)}
+    .prof-stat:nth-child(2) .n{color:var(--accent-coral)}
+    .prof-stat:nth-child(3) .n{color:var(--text-secondary)}
+    .prof-stat .l{font-size:11px;color:var(--text-secondary);margin-top:3px;line-height:1.3}
+    .dash-head{cursor:pointer;transition:background .2s}
+    .dash-head:active{background:rgba(255,255,255,0.06)}
+    .banner{
+      background:linear-gradient(135deg,var(--accent-coral),var(--accent-mint));color:#2b302e;border-radius:18px;padding:16px;margin-bottom:14px}
+    .banner .t{font-weight:700;font-size:15px;margin-bottom:10px}
+    .row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.05);
+      border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;
+      transition:background .2s, transform .2s ease, border-color .2s;
+      border:1px solid rgba(255,255,255,0.06);
+      animation:heroIn .45s cubic-bezier(.34,1.4,.64,1) both}
+    .row:hover{background:rgba(255,255,255,0.09);transform:translateX(3px);border-color:rgba(255,255,255,0.12)}
+    /* APPLE: отклик на pointer-down для строк — мгновенная подсветка */
+    .row:active{background:rgba(255,255,255,0.11);transform:scale(.99)}
+    .row .ic-wrap{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none}
+    .row .ic{width:18px;height:18px;color:#fff}
+    .row .t{font-size:14px;flex:1;color:var(--text-primary)}
+    .row .sub{font-size:11px;color:var(--text-secondary);white-space:nowrap;opacity:.7}
+
+    /* ---- Bottom nav ---- */
+    .nav{
+      position:fixed;left:0;right:0;bottom:0;z-index:10;
+      display:flex;justify-content:space-around;align-items:center;
+      padding:10px 8px calc(env(safe-area-inset-bottom) + 10px);
+      background:rgba(43,48,46,0.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      border-top:1px solid rgba(255,255,255,0.06)}
+    .nav button{
+      background:none;border:0;color:var(--text-secondary);cursor:pointer;
+      display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;flex:1;padding:4px;
+      transition:color .3s ease}
+    .nav button svg{width:24px;height:24px;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;
+      transition:transform .4s cubic-bezier(.34,1.56,.64,1), filter .3s ease}
+    /* мягкая заливка активной иконки + лёгкое покачивание */
+    .nav button.active{color:var(--accent-coral)}
+    .nav button.active svg{
+      fill:rgba(245,146,110,0.14);stroke:var(--accent-coral);
+      filter:drop-shadow(0 0 6px rgba(245,146,110,0.35));
+      animation:sway 3.2s ease-in-out infinite}
+    @keyframes sway{
+      0%,100%{transform:rotate(-3deg)}
+      50%{transform:rotate(3deg)}}
+    @media (prefers-reduced-motion:reduce){.nav button.active svg{animation:none}}
+
+    .hidden{display:none}
+    .modal-mask{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:20;padding:24px}
+    .modal-mask.hidden{display:none} /* PLAY: перебивает .modal-mask{display:flex} — иначе .hidden не скрывает пейвол */
+    .modal{background:#2b302e;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:24px;max-width:340px;text-align:center}
+    .modal h3{font-size:18px;margin-bottom:10px}
+    .modal p{color:var(--text-secondary);font-size:14px;margin:0 0 18px}
+
+    /* success particles */
+    .burst{position:fixed;inset:0;pointer-events:none;z-index:30;display:flex;align-items:center;justify-content:center}
+    .burst span{position:absolute;width:10px;height:10px;border-radius:50%;animation:pop .9s ease-out forwards}
+    @keyframes pop{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
+
+    /* ---- Защита контента ---- */
+    *{ -webkit-touch-callout:none; -webkit-user-select:none; -khtml-user-select:none;
+        -moz-user-select:none; -ms-user-select:none; user-select:none; }
+    input,textarea{ -webkit-user-select:text; user-select:text; }
+    /* ВАЖНО: НЕ ставим pointer-events:none на <video>/<iframe> — иначе тач по
+       плееру урока (play/pause/fullscreen) не работает в Telegram WebView.
+       Защита видео — через водяной знак + кастомные контролы, а не блокировку тача. */
+    img{ -webkit-user-drag:none; }
+
+    /* ---- Видеоплеер: контролы ---- */
+    .vwrap{position:relative;width:100%;aspect-ratio:16/9;background:#1c201e;border-radius:16px;overflow:hidden;margin-bottom:14px}
+    .vwrap video{position:absolute;inset:0;width:100%;height:100%;background:#000;pointer-events:auto}
+    .vwrap .wm{position:absolute;z-index:4;right:8px;bottom:40px;font-size:12px;font-weight:600;
+      color:rgba(255,255,255,0.55);text-shadow:0 1px 3px rgba(0,0,0,0.8);pointer-events:none;
+      letter-spacing:.02em;animation:wmpan 14s linear infinite}
+    @keyframes wmpan{0%{transform:translateX(0)}50%{transform:translateX(-12px)}100%{transform:translateX(0)}}
+    .vwrap .bigplay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+      background:rgba(28,32,30,0.45);z-index:2}
+    .vwrap .bigplay svg{width:60px;height:60px;color:var(--accent-coral)}
+    .vbar{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;align-items:center;gap:8px;
+      padding:8px 10px;background:linear-gradient(transparent,rgba(0,0,0,0.65));opacity:0;transition:opacity .2s}
+    .vwrap.showbar .vbar{opacity:1}
+    /* Поворот телефона боком (горизонтально) → видео на весь экран смартфона */
+    @media (orientation:landscape) and (max-height:560px){
+      .vwrap{position:fixed;inset:0;z-index:95;width:100vw;height:100vh;height:100dvh;
+        aspect-ratio:auto;border-radius:0;margin:0;background:#000}
+      .vwrap video, .vwrap iframe{object-fit:contain}
+      .vwrap .wm{bottom:14px;right:14px;font-size:14px}
+    }
+    .vbar button{background:rgba(255,255,255,0.12);border:0;color:#fff;border-radius:8px;
+      width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+    .vbar button svg{width:18px;height:18px}
+    .vbar .spd{font-size:13px;font-weight:700;color:#fff;min-width:40px;text-align:center}
+    .vbar .seek{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,0.25);position:relative;cursor:pointer}
+    .vbar .seek > i{position:absolute;left:0;top:0;height:100%;background:var(--accent-coral);border-radius:4px}
+    /* Защита доступности: отключаем все мягкие анимации, если в системе включён "уменьшить движение" */
+    @media (prefers-reduced-motion:reduce){
+      .hero,.btn,.gp .diamond,.stat .card,.free,.free .ic,.row,.lesson,.lesson.active,.nav button.active svg{
+        animation:none !important}
+      .btn:hover,.row:hover,.lesson:hover{transform:none}
+    }
+
+    /* ---- PLAY: Toast-уведомления ---- */
+    .toast{
+      position:fixed;bottom:100px;left:18px;right:18px;z-index:50;
+      background:rgba(43,48,46,0.90);backdrop-filter:blur(12px);
+      border:1px solid rgba(140,226,200,0.25);border-radius:16px;
+      padding:14px 18px;display:flex;align-items:center;gap:12px;
+      transform:translateY(120px);opacity:0;
+      transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .4s ease;
+      pointer-events:none;box-shadow:0 4px 24px rgba(0,0,0,0.25)}
+    .toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+    .toast .ic{width:32px;height:32px;flex:none}
+    .toast .t{font-size:14px;line-height:1.4;color:var(--text-primary);flex:1}
+    .toast .t b{color:var(--accent-mint)}
+    .toast .close{font-size:16px;color:var(--text-secondary);cursor:pointer;flex:none;opacity:.6;transition:opacity .2s}
+    .toast .close:hover{opacity:1}
+
+    /* ---- PLAY: автоскидка Stars ---- */
+    .gp-auto{
+      margin:16px 0;padding:14px 16px;
+      background:rgba(140,226,200,0.06);border:1px solid rgba(140,226,200,0.18);
+      border-radius:14px;text-align:center}
+    .gp-auto .lbl{font-size:13px;color:var(--text-secondary);margin-bottom:4px}
+    .gp-auto .val{font-family:'Unbounded';font-weight:800;font-size:22px;color:var(--accent-mint)}
+    .gp-auto .small{font-size:12px;color:var(--text-secondary);margin-top:2px}
+
+    /* ---- PLAY: карточка приглашения в профиле ---- */
+    .invite-card{
+      margin:12px 0;padding:16px;border-radius:16px;
+      background:linear-gradient(135deg,rgba(245,146,110,0.12),rgba(140,226,200,0.08));
+      border:1px solid rgba(245,146,110,0.20);text-align:center}
+    .invite-card .t{font-size:14px;line-height:1.5;margin-bottom:12px}
+    .invite-card .t b{color:var(--accent-coral)}
+    .invite-card .sub{font-size:12px;color:var(--text-secondary);margin-top:10px;opacity:.7}
+
+    /* ---- Loading skeleton (пока летит /api/init) ---- */
+    .skel{position:relative;color:transparent!important;background:rgba(255,255,255,0.07);
+      border-radius:6px;overflow:hidden;user-select:none;pointer-events:none}
+    .skel::after{content:'';position:absolute;inset:0;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent);
+      background-size:200% 100%;animation:skel 1.2s linear infinite}
+    @keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    body.reduce-motion .skel::after{animation:none}
+    /* Inline-ошибка загрузки с повтором (вместо silent fallback) */
+    .init-err{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;
+      background:rgba(245,146,110,0.08);border:1px solid rgba(245,146,110,0.25);
+      border-radius:16px;padding:20px;margin-bottom:14px}
+    .init-err .ie-ic{font-size:28px}
+    .init-err .ie-t{font-size:14px;color:var(--text-secondary);line-height:1.5}
+  /* ---- Admin-тоггл (только для @baronantonov, id=285754501) ----
+     Плавающая маленькая кнопка-шестерёнка вверху справа.
+     ВКЛ: админ-режим — весь контент открыт для теста UI.
+     ВЫКЛ: обычный юзер — прогресс из базы данных. */
+  #admin-toggle{
+    position:fixed;top:calc(env(safe-area-inset-top) + 8px);right:10px;z-index:9999;
+    width:34px;height:34px;border-radius:50%;display:none;
+    align-items:center;justify-content:center;cursor:pointer;
+    background:rgba(245,146,110,0.18);border:1px solid rgba(245,146,110,0.45);
+    color:var(--accent-coral);box-shadow:0 2px 10px rgba(0,0,0,0.25);
+    transition:transform .2s, background .2s, box-shadow .2s;
+    -webkit-tap-highlight-color:transparent}
+  #admin-toggle:active{transform:scale(0.9)}
+  #admin-toggle svg{width:19px;height:19px;display:block}
+  #admin-toggle.on{
+    background:rgba(140,226,200,0.22);border-color:rgba(140,226,200,0.6);
+    color:var(--accent-mint);box-shadow:0 0 0 4px rgba(140,226,200,0.15)}
+  </style>
+</head>
+<body>
+  <!-- Admin-тоггл: виден ТОЛЬКО для @baronantonov (id=285754501) -->
+  <button id="admin-toggle" onclick="toggleAdmin()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+         stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+  <div class="wrap">
+  <!-- PLAY: Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"><div class="ic" id="toast-ic">🎁</div><div class="t" id="toast-msg">Сообщение</div><span class="close" onclick="document.getElementById('toast').classList.remove('show')">✕</span></div>
+    <!-- TAB 1: Главный экран -->
+    <section id="tab-home">
+      <!-- 1. Шапка: приветствие + прогресс (компактно, клик → профиль) -->
+      <div class="dash-head shim" onclick="switchTab('profile')">
+        <div class="user-avatar" id="avatar-main"></div>
+        <div class="dash-info">
+          <div class="dash-name">Привет, <span id="uname">Друг</span>!</div>
+          <div class="dash-meta">
+            <span><span id="archetype">Куратор Вайба</span></span>
+            <span class="dot">·</span>
+            <span><span class="gp-v skel" id="gp" style="display:inline-block;min-width:18px">—</span> ⭐</span>
+            <span class="dot">·</span>
+            <span><span class="st skel" id="done-n" style="display:inline-block;min-width:14px">—</span>/6 ур.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Hero: текущий урок — главный фокус и CTA -->
+      <div class="hero shim">
+        <div class="hero-head">
+          <div class="tag">Продолжаем учиться</div>
+        </div>
+        <div class="hero-title-row">
+          <h2 id="next-lesson" class="skel" style="display:block;min-height:24px">—</h2>
+          <div id="arch-line" style="font-size:13px;color:var(--accent-mint);margin:2px 0 4px;font-weight:600"></div>
+          <div class="hero-progress-num"><span class="st skel" id="lesson-n" style="display:inline-block;min-width:14px">—</span><span class="of">/6</span></div>
+        </div>
+        <div class="hero-duration">время прохождения 15–20 минут</div>
+        <div class="progress skel" id="bar-wrap"><i id="bar" style="width:0%"></i></div>
+        <div class="play-deck-wrap">
+          <button class="play-deck" id="play-btn" onclick="heroPlay()" aria-label="Играть урок">
+            <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>
+          </button>
+          <div class="play-deck-label" id="play-label">Начать урок 1</div>
+          <a class="upgrade-link" onclick="switchTab('upgrade')">Персональное менторство →</a>
+        </div>
+      </div>
+
+      <!-- 3. Ценность: зачем учиться (маркетинг-блок) -->
+      <div class="value-grid">
+        <div class="value-card">
+          <div class="value-ic">🎚️</div>
+          <div class="value-t">С нуля до сета</div>
+          <div class="value-d">6 уроков: оборудование, сведение, чтение танцпола</div>
+        </div>
+        <div class="value-card">
+          <div class="value-ic">🎁</div>
+          <div class="value-t">Бесплатные ⭐</div>
+          <div class="value-d">Бонус-уроки и друзья = скидка на курс</div>
+        </div>
+        <div class="value-card">
+          <div class="value-ic">🎧</div>
+          <div class="value-t">Свой вайб</div>
+          <div class="value-d">Учись играть, а не копировать чужое</div>
+        </div>
+      </div>
+
+      <!-- 4. Акция / реферал / соцпруф -->
+      <div class="team-share" onclick="shareArchetype()" id="team-share-card" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')shareArchetype()">
+        <div style="font-size:30px">🎧</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px;color:var(--accent-mint)">Я — <span id="ts-arch">Куратор Вайба</span></div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:2px">Собери свою команду DJ. Поделись кем ты стал</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--accent-coral);white-space:nowrap">+20 ⭐</div>
+      </div>
+
+      <button class="btn ghost" style="width:auto;padding:11px 18px;margin-top:4px" onclick="switchTab('bonus')">🎁 Бонусные уроки</button>
+
+      <!-- 5. Манифест (раскрывающийся) -->
+      <div class="manifest">
+        <div class="m-row">
+          <div class="m-btn" role="button" tabindex="0" onclick="toggleManifest(0)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleManifest(0)">
+            Open Deck <span class="arr">▼</span>
+          </div>
+          <div class="m-btn" role="button" tabindex="0" onclick="toggleManifest(1)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleManifest(1)">
+            Open Heart <span class="arr">▼</span>
+          </div>
+          <div class="m-btn" role="button" tabindex="0" onclick="toggleManifest(2)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleManifest(2)">
+            Open Mind <span class="arr">▼</span>
+          </div>
+        </div>
+        <div class="m-panel" id="m-panel">
+          <span class="mt" id="m-title"></span>
+          <div id="m-body"></div>
+        </div>
+      </div>
+
+      <div class="gp-value">За каждый урок курса <b>+50 ⭐</b>, за бонус-урок (теорию) <b>+200 ⭐</b>. Stars дают скидку на менторство с FREEDA DJ.</div>
+      <div class="micro-hint">Смотри уроки → получай <b>⭐ Stars</b> → трать на скидку курса. Приведёшь друга <b>по 100 ⭐</b> вам обоим. Начнём с урока 1!</div>
+    </section>
+
+    <!-- TAB 2: Course -->
+    <section id="tab-course" class="hidden"></section>
+
+    <!-- TAB 2b: Bonus -->
+    <section id="tab-bonus" class="hidden"></section>
+
+    <!-- TAB 3: Upgrade -->
+    <section id="tab-upgrade" class="hidden">
+      <!-- BC: постоянный центр монетизации (tripwire/full) — не только через пейвол-модалку -->
+      <div class="offer" style="border-color:rgba(245,146,110,0.30)">
+        <div class="pill" style="color:var(--accent-coral)">Доступ к курсу</div>
+        <h2>Pocket DJ. Базовый курс</h2>
+        <p style="color:var(--text-secondary);font-size:14px;line-height:1.5;margin:0 0 14px">
+          6 уроков с нуля до первого сета: оборудование, beatmatching, сведение, эффекты, чтение танцпола.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:6px">
+          <button class="btn" id="up-tripwire" onclick="bookPay('tripwire')">
+            <span>⚡ Быстрый старт · уроки 1–4</span><br>
+            <small style="font-weight:600;opacity:.85">500 ⭐</small>
+          </button>
+          <button class="btn mint" id="up-full" onclick="bookPay('dj-basics')">
+            <span>🎧 Полный курс (все 6 уроков + бонусы)</span><br>
+            <small style="font-weight:600;opacity:.85">2100 ⭐</small>
+          </button>
+        </div>
+        <div id="up-status" style="font-size:12px;color:var(--accent-mint);margin:4px 0 14px;min-height:16px"></div>
+      </div>
+
+      <!-- PLAY: скидка за теорию + рефералка = бесплатный рост -->
+      <div class="offer" style="border-color:rgba(140,226,200,0.30);background:rgba(140,226,200,0.04)">
+        <div class="pill" style="color:var(--accent-mint)">Бесплатная скидка</div>
+        <h2>Заработай Stars бесплатно</h2>
+        <p style="color:var(--text-secondary);font-size:14px;line-height:1.5;margin:0 0 14px">
+          Досмотри все <b>бонус-уроки (теорию)</b> <b>+200 ⭐</b> за каждый.
+          Или пригласи друзей: <b>+100 ⭐</b> вам обоим, <b>+500 ⭐</b> за покупку каждым,
+          и <b>до +2500 ⭐</b> за 10 друзей. Накопленные Stars = скидка на курс и менторство.
+        </p>
+        <div class="micro-hint">Большую часть <b>⭐ можно заработать бесплатно</b>: бонус-уроки и друзья. Оплата нужна только за полный доступ и менторство.</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn mint" onclick="switchTab('bonus')">
+            <span>📚 Смотреть бонус-уроки (теорию)</span><br>
+            <small style="font-weight:600;opacity:.85" id="theory-progress">0 / 4 пройдено</small>
+          </button>
+          <button class="btn" onclick="shareInvite()">
+            <span>👥 Пригласить друга</span><br>
+            <small style="font-weight:600;opacity:.85" id="ref-progress-mini">0 друзей • 0 ⭐</small>
+          </button>
+        </div>
+      </div>
+
+      <div class="offer">
+        <div class="pill">High-Ticket · Ограничено</div>
+        <h2>Персональное Менторство с FREEDA DJ</h2>
+        <p style="color:var(--text-secondary);font-size:14px;line-height:1.5;margin:0 0 16px">
+          Ускорение прогресса в 10 раз. Лично проведу тебя от первых битов до уверенного сета –
+          с разбором твоей музыки, твоих ошибок и твоего звучания.
+        </p>
+
+        <div class="sessions">
+          <div class="sess"><div class="n">1</div><div><div class="tt">Знакомство и аудит</div><div class="ds">Разбираем твой вкус, цели и базу. Составляем дорожную карту.</div></div></div>
+          <div class="sess"><div class="n">2</div><div><div class="tt">Техника и сведение</div><div class="ds">Ставим руки: beatmatching, миксы, работа с темпо и эффектами.</div></div></div>
+          <div class="sess"><div class="n">3</div><div><div class="tt">Твой первый сет</div><div class="ds">Собираем микс вместе, разбираем драматургию и чтение танцпола.</div></div></div>
+          <div class="sess"><div class="n">4</div><div><div class="tt">Выпуск и план роста</div><div class="ds">Финальный разбор, обратная связь и стратегия развития на месяцы.</div></div></div>
+        </div>
+
+        <ul class="incl">
+          <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span><b>4 сессии</b> по 1.5 часа (онлайн, 1-на-1)</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span><b>Персональная дорожная карта</b> обучения под тебя</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span><b>Разбор твоих миксов</b> с конкретной обратной связью</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span><b>Доступ к записям</b> всех сессий</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><span><b>Поддержка</b> в чате между сессиями</span></li>
+        </ul>
+
+        <div class="price">
+          <del>21000 ⭐</del>
+          <span class="disc" id="discount">Твоя скидка: −0 ⭐</span>
+        </div>
+        <div class="price"><span class="final" id="mentor-final">21000 ⭐</span></div>
+        <div class="seats">Осталось 2 места из 5 в этом месяце</div>
+        <div class="gp-auto" id="gp-auto">
+          <div class="lbl">Твои Stars</div>
+          <div class="val" id="gp-balance">0 ⭐</div>
+          <div class="small">Автоматически вычтем из цены менторства</div>
+        </div>
+        <button class="btn" onclick="bookMentor()">Забронировать место</button>
+      </div>
+
+      <div class="offer" style="border-color:rgba(140,226,200,0.30)">
+        <div class="pill" style="color:var(--accent-mint)">Следующий уровень</div>
+        <h2>Курс «Advanced DJ»</h2>
+        <p style="color:var(--text-secondary);font-size:14px;margin:0 0 14px">Переход от техники к искусству: глубокое сведение, эффекты, живые сеты и авторский почерк.</p>
+        <button class="btn mint" onclick="comingSoon('Advanced DJ','Полный курс «Advanced DJ» откроется позже. Переход от техники к искусству: глубокое сведение, эффекты, живые сеты.')">Подробнее</button>
+      </div>
+    </section>
+
+    <!-- TAB 4: Profile -->
+    <section id="tab-profile" class="hidden">
+      <div class="prof-card">
+        <div class="prof-avatar-wrap">
+          <div class="prof-avatar" id="avatar-big" style="font-size:32px;font-weight:700">D</div>
+          <div class="prof-badge">
+            <span class="ico">🎧</span>
+            <span class="txt" id="prof-archetype">Куратор Вайба</span>
+          </div>
+        </div>
+        <div class="prof-name" id="prof-name">Daniil</div>
+        <div class="prof-stats">
+          <div class="prof-stat"><div class="n" id="prof-gp">0</div><div class="l">⭐ Stars</div></div>
+          <div class="prof-stat"><div class="n" id="prof-done">0</div><div class="l">уроков пройдено</div></div>
+          <div class="prof-stat"><div class="n">6</div><div class="l">уроков в курсе</div></div>
+        </div>
+      </div>
+      <!-- E: Геймификация — weekly streak + achievements (фронтенд-only, DeviceStorage) -->
+      <div class="ach-block" id="ach-block" style="margin:14px 0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-family:'Unbounded';font-weight:700;font-size:15px">🔥 Серия</span>
+          <span id="streak-num" style="color:var(--accent-coral);font-weight:700;font-size:14px">—</span>
+        </div>
+        <div id="streak-week" style="display:flex;gap:6px;margin-bottom:14px"></div>
+        <div id="streak-freeze" style="display:none;margin-bottom:14px"></div>
+        <span style="font-family:'Unbounded';font-weight:700;font-size:15px;display:block;margin-bottom:8px">🏆 Достижения</span>
+        <div id="ach-list" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <!-- E: Rewarded-механика — бесплатные GP (OmiSoft P2E-кейс: легальный путь к контенту) -->
+      <div class="ach-block" style="margin:14px 0">
+        <span style="font-family:'Unbounded';font-weight:700;font-size:15px;display:block;margin-bottom:4px">🎁 Бесплатные Stars</span>
+        <p style="font-size:12px;color:var(--text-secondary);margin:0 0 10px">Зарабатывай Stars за действия — трать на скидку менторства или разморозку серии.</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn ghost" id="rw-share" style="width:100%;padding:10px;font-size:13px;display:flex;justify-content:space-between;align-items:center" onclick="earnGP('share')">
+            <span>📤 Поделиться курсом</span><b>+20 ⭐</b>
+          </button>
+          <button class="btn ghost" id="rw-daily" style="width:100%;padding:10px;font-size:13px;display:flex;justify-content:space-between;align-items:center" onclick="earnGP('daily')">
+            <span>📅 Ежедневный бонус</span><b>+10 ⭐</b>
+          </button>
+          <button class="btn ghost" id="rw-review" style="width:100%;padding:10px;font-size:13px;display:flex;justify-content:space-between;align-items:center" onclick="earnGP('review')">
+            <span>⭐ Оставить отзыв</span><b>+50 ⭐</b>
+          </button>
+        </div>
+      </div>
+      <!-- PLAY: Invite card with progress (Точка В) -->
+      <div class="invite-card">
+        <div class="t" id="ref-header">Пригласи напарника и получи <b>+30 ⭐</b> за каждую регистрацию!<br>А если друг купит курс <b>+200 ⭐</b> 🎧</div>
+        <div id="ref-friends" style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Загрузка...</div>
+        <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:4px;margin:0 0 10px;overflow:hidden">
+          <div id="ref-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent-coral),var(--accent-mint));border-radius:4px;transition:width .5s"></div>
+        </div>
+        <button class="btn" style="width:auto;padding:10px 28px;display:inline-flex;background:var(--accent-coral);font-size:13px" onclick="shareInvite()">Пригласить друга</button>
+      </div>
+      <div class="row" onclick="openChat()"><div class="ic-wrap" style="background:rgba(140,226,200,0.20)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><span class="t">Open Deck DJ Camp</span><span class="sub">чат →</span></div>
+      <div style="height:1px;background:rgba(255,255,255,0.06);margin:14px 0 12px;border-radius:2px"></div>
+      <div class="row" onclick="openSupport()"><div class="ic-wrap" style="background:rgba(245,146,110,0.20)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div><span class="t">Поддержка</span></div>
+      <div class="row" onclick="openRules()"><div class="ic-wrap" style="background:rgba(192,160,168,0.20)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><span class="t">Правила и офферта</span></div>
+    </section>
+  </div>
+
+  <!-- Bottom navigation -->
+  <nav class="nav" id="nav" role="tablist" aria-label="Разделы приложения">
+    <button data-tab="home" class="active" role="tab" aria-selected="true" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-8 9 8v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21V12h6v9"/></svg>Главная</button>
+    <button data-tab="course" role="tab" aria-selected="false" onclick="switchTab('course')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M10 9.2a1 1 0 0 1 1.1-1l4 2.3a1 1 0 0 1 0 1.7l-4 2.3A1 1 0 0 1 10 14.8z" fill="currentColor" stroke="none"/></svg>Курс</button>
+    <button data-tab="bonus" role="tab" aria-selected="false" onclick="switchTab('bonus')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12l-8-8-8 8 8 8 8-8z"/><path d="M12 4v16" stroke-dasharray="2 2"/></svg>Бонусы</button>
+    <button data-tab="upgrade" role="tab" aria-selected="false" onclick="switchTab('upgrade')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Развитие</button>
+    <button data-tab="profile" role="tab" aria-selected="false" onclick="switchTab('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3.5"/><path d="M5 19v-2a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v2"/><rect x="3" y="5.5" width="3.5" height="5" rx="1.5"/><rect x="17.5" y="5.5" width="3.5" height="5" rx="1.5"/></svg>Профиль</button>
+  </nav>
+
+  <!-- PLAY A: Paywall-модалка (закрывает дыру воронки — курс иначе бесплатен) -->
+  <!-- Единый экран: 1 курс + выбор способа оплаты (Stars / карта-СБП через Prodamus) -->
+  <div class="modal-mask hidden" id="paywall" onclick="if(event.target===this)hidePaywall()">
+    <div class="modal" style="max-width:360px">
+      <h3 id="pw-title" style="font-size:19px;margin-bottom:6px">Открой доступ к курсу 🔥</h3>
+      <p id="pw-sub" style="color:var(--text-secondary);font-size:13px;margin:0 0 14px">Пройди ещё уроки и стань DJ</p>
+
+      <!-- Выбор способа оплаты -->
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:6px">
+        <button class="btn mint" id="pw-stars" onclick="bookPay(currentPaywallCourse)">
+          <span>⭐ Оплатить Stars</span><br>
+          <small id="pw-stars-price" style="font-weight:600;opacity:.85">2100 ⭐</small>
+        </button>
+        <button class="btn alt" id="pw-card" onclick="bookPayProdamus(currentPaywallCourse)">
+          <span>💳 Картой / СБП (РФ)</span><br>
+          <small id="pw-card-price" style="font-weight:600;opacity:.85">МИР · Visa · СБП · рассрочка</small>
+        </button>
+      </div>
+      <p style="font-size:11px;color:var(--text-secondary);opacity:.7;margin:8px 0 14px">Выбери способ: Stars (внутри Telegram) или карта/СБП через Prodamus. Любой платёж открывает все уроки.</p>
+      <button class="btn ghost" style="width:100%;padding:10px" onclick="hidePaywall()">Позже</button>
+    </div>
+  </div>
+
+  <script>
+    const tg = (window.Telegram && window.Telegram.WebApp) || {};
+    // Базовый URL бэкенда (API).
+    // M2: вынесен из харда в конфиг-блок — меняй здесь при смене туннеля/домена.
+    // ngrok-free.dev временный: при смене URL обнови строку ниже (или заведи
+    // постоянный домен и пропиши его и в CORS-список бэкенда).
+    const API_BASE = 'https://squabble-lilly-lankiness.ngrok-free.dev';
+    try { tg.ready && tg.ready(); } catch(e){}
+    try { tg.expand && tg.expand(); } catch(e){}
+    try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch(e){}
+    try { tg.setHeaderColor && tg.setHeaderColor('#2b302e'); tg.setBackgroundColor && tg.setBackgroundColor('#2b302e'); } catch(e){}
+
+    // ---- Self version-busting (бьём кэш Telegram WebView изнутри) ----
+    // Telegram агрессивно кэширует Mini App по URL.
+    //  - Через бота: в URL уже есть ?v=<hash> (бот шлёт актуальный HEAD) -> оставляем как есть.
+    //  - По прямой ссылке (GitHub Pages): ?v= нет -> добавляем свежий timestamp,
+    //    чтобы Telegram видел НОВЫЙ URL при каждом открытии и перезагружал WebView.
+    // Не сверяем с захардкоженным хэшем: он всегда отстаёт на 1 коммит и
+    // создавал бы бесконечный цикл переподстановки.
+    (function selfVersionBust(){
+      try {
+        const params = new URLSearchParams(location.search);
+        if(!params.has('v')){
+          params.set('v', String(Date.now()));
+          const newUrl = location.pathname + '?' + params.toString() + location.hash;
+          location.replace(newUrl);
+        }
+      } catch(_){}
+    })();
+
+    // ---- Haptic Feedback (ощущение нативности) ----
+    function haptic(method){
+      try { if(tg.HapticFeedback) tg.HapticFeedback[method](method==='notificationOccurred'?'success':'light'); } catch(_){}
+    }
+
+    // ---- Closing Confirmation (не даём случайно закрыть) ----
+    try { tg.enableClosingConfirmation && tg.enableClosingConfirmation(); } catch(_){}
+
+    // ---- Performance Class (адаптация под слабые устройства) ----
+    // Telegram Android передаёт в User-Agent: {performance_class} = LOW|AVERAGE|HIGH
+    const ua = navigator.userAgent;
+    const perfMatch = ua.match(/;\s*(LOW|AVERAGE|HIGH)\s*\)/);
+    const perfClass = perfMatch ? perfMatch[1] : 'AVERAGE';
+    if (perfClass === 'LOW') {
+      document.body.classList.add('reduce-motion');
+    }
+
+    // ---- Защита контента (лучшее из возможного в вебе) ----
+    // Блокируем контекстное меню / долгое нажатие / выделение
+    document.addEventListener('contextmenu', e=>e.preventDefault());
+    document.addEventListener('selectstart', e=>e.preventDefault());
+    // Размытие ТОЛЬКО на iOS при сворачивании (защита превью многозадачности).
+    // В Telegram Desktop (tdesktop/web) события focus/pagehide ведут себя иначе и могут
+    // оставить окно навсегда в blur(20px) → приложение «заморожено», кнопки не жмутся.
+    // Поэтому блюрим строго на iOS и всегда снимаем размытие при показе/старте.
+    function blurOn(){ if(tg.platform === 'ios'){ document.body.style.filter='blur(20px)'; } }
+    function blurOff(){ document.body.style.filter=''; }
+    if(tg.isWebView){
+      document.addEventListener('visibilitychange', ()=>{
+        if(document.hidden){ blurOn(); stopVideoAll(); }
+        else { blurOff(); }
+      });
+      window.addEventListener('focus', blurOff);
+      if(tg.onEvent){ try { tg.onEvent('viewportChanged', blurOff); } catch(e){} }
+    }
+    // Гарантированно снимаем защитное размытие сразу после инициализации
+    blurOff();
+    setTimeout(blurOff, 300);
+
+    // ---- Открыто вне Telegram (пустой init_data, напр. по прямой ссылке) ----
+    // По правилу продукта фронт ДОЛЖЕН работать и по прямой ссылке (режим
+    // просмотра): контент курса/бонусов рендерится, прогресс не сохраняется
+    // (бэкенд вернёт 401 без валидного init_data). Поэтому НЕ блокируем
+    // приложение throw и НЕ перекрываем экран fullscreen-баннером — иначе
+    // вкладка «Бонусы» оказывается пустой. Показываем только лёгкую подсказку.
+    if(!tg.initData){
+      const hint = document.createElement('div');
+      hint.className = 'init-err';
+      hint.style.marginBottom = '14px';
+      hint.innerHTML = '<div class="ie-ic">🤖</div>'
+        + '<div class="ie-t">Открыто вне Telegram — показан просмотр.<br>'
+        + 'Чтобы сохранять прогресс, открой через <b>@OpenDeck_bot</b> → «🎧 Открыть курс DJ».</div>';
+      const home = document.getElementById('tab-home');
+      if(home) home.insertBefore(hint, home.firstChild);
+      // продолжаем: initApp() ниже отрисует контент из локального state (fallback)
+    }
+
+    // ---- Состояние: инициализация, имя и фото из Telegram ----
+    const tgUser = (tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+    const userName = tgUser.first_name || (tgUser.username ? "@"+tgUser.username : "Друг");
+    const userPhoto = tgUser.photo_url || "";
+    const state = {
+      isPaid: false,          // PLAY A: куплен ли доступ (tripwire/full) — для пейвола
+      paidFull: false,
+      freeLessons: 1,         // бесплатных уроков (порог входа, с бэкенда FREE_LESSONS)
+      ab: {},                  // A/B-варианты (локализация и т.п.)
+      user: { name: userName, archetype: "Куратор Вайба", groovePoints: 0, referralCode: '', referralFriends: 0, referralGpEarned: 0 },
+      courseProgress: { currentLessonId: null, completedLessons: [] },
+      lessons: [
+        { t:"Интерфейс на телефоне: твой первый контроллер", video:"https://www.youtube.com/embed/_x8ONg58GeU", d:["Обзор программы на телефоне и из чего состоит контроллер.","Дека, частоты, кнопка плей, фейдеры, фильтр – что делает каждая ручка.","Перестань бояться экрана: всё логично, когда разобрал по частям."] },
+        { t:"Основы сведения: BPM, темп и кнопка Sync", d:["Процесс сведения двух треков: BPM, темп, микширование.","Как сводить в одной тональности, стиле и темпе – и зачем нужна кнопка Sync.","Первый реальный микс: два трека становятся единым потоком."] },
+        { t:"Кроссфейдер и нюансы темпо", d:["Техника сведения через кроссфейдер – плавный переход между деками.","Нюансы темпо: режимы Wide, 6, 10, 16 и когда их применять.","Поймёшь, как держать энергию ровной, без рывков."] },
+        { t:"Лупы и Beat Jump: лёгкое сведение", d:["Лупы (петли) – простой способ зациклить кусок и свести без спешки.","Beat Jump: прыжки по битам для точного попадания.","Это приёмы, что делают сведение расслабленным, а не нервным."] },
+        { t:"Эффекты и фильтр: краски твоего сета", d:["Что такое эффекты и обзор доступных в бесплатной версии.","Простое применение эффекта при сведении, работа с падами.","Фильтр – аккуратно, чтобы украсить, а не сломать момент."] },
+        { t:"Твой первый микс из 4–5 треков", d:["Особенности построения микса и основы композиции.","Сводим микс из 4–5 треков, комбинируя все способы сведения.","Финал курса: готов первый сет и точка опоры в жизни."] }
+      ],
+      bonusLessons: [
+        { id:1, t:"Знакомство: кто такой диджей и зачем он нужен", video:"https://www.youtube.com/embed/_x8ONg58GeU", d:["Знакомство с Ташей (FREEDA DJ): мой путь от первого бита до фестивалей.","Кто такой диджей, его функция на вечеринке и где применяется диджеинг сегодня.","Диджей – это не избранные, а любой, кто ведёт энергию через музыку."] },
+        { id:2, t:"История: от диско до наших дней", d:["Краткая история появления диджеинга и как он менялся десятилетиями.","Путь электронной музыки: от диско-эры до современных стилей.","Поймёшь контекст – откуда растут ноги у того, что крутишь сегодня."] },
+        { id:3, t:"Направления и оборудование: где найти себя", d:["Виды диджеинга: коммерческий, ивент, андерграунд, фестивальный, радио, проводник практик.","Какое бывает оборудование и в каких сферах используется.","Выбери своё направление – это снимет страх «а я не такой, как все»."] },
+        { id:4, t:"Музыкальная теория: бит, ритм и колесо Камелота", d:["Из чего строится музыка: бит, ритм, тональности, дорожки в треке.","Колесо Камелота – как подбирать треки, что звучат «родственно».","Строение трека: интро, ямы, дропы, аутро – читаем музыку как книгу."] }
+      ]
+    };
+
+    // ---- Admin-режим (только для @baronantonov, id=285754501) ----
+    // ВКЛ: весь контент (уроки + бонусы) открыт для теста UI.
+    // ВЫКЛ: обычный юзер — прогресс берётся из базы данных (state.courseProgress).
+    const ADMIN_ID = 285754501;
+    const IS_ADMIN = (tgUser.id && String(tgUser.id) === String(ADMIN_ID))
+                     || (tgUser.username && tgUser.username.toLowerCase() === 'baronantonov');
+    let ADMIN_MODE = false;            // текущее состояние тоггла
+    let savedCompleted = [];           // запоминаем реальный прогресс из БД
+
+    if(IS_ADMIN){
+      const at = document.getElementById('admin-toggle');
+      if(at) at.style.display = 'flex';
+    }
+
+    function toggleAdmin(){
+      ADMIN_MODE = !ADMIN_MODE;
+      const at = document.getElementById('admin-toggle');
+      if(at) at.classList.toggle('on', ADMIN_MODE);
+      document.body.classList.toggle('admin-mode', ADMIN_MODE);
+      // перерисовываем открытые вкладки с учётом нового режима
+      const active = document.querySelector('#nav button.active');
+      const tab = active ? active.dataset.tab : 'home';
+      if(tab === 'course') renderCourse();
+      else if(tab === 'bonus') renderBonus();
+      haptic('impactOccurred');
+      if(ADMIN_MODE){
+        showToast('⚡', 'ADMIN MODE включён — весь контент открыт для теста.');
+      } else {
+        showToast('👤', 'Обычный режим — прогресс из базы данных.');
+      }
+    }
+
+    function updateUI(){
+      const dc = state.courseProgress.completedLessons.length;
+      const tc = state.lessons.length;
+      const gp = state.user.groovePoints;
+      const pct = Math.round(dc/tc*100);
+      document.getElementById('uname').textContent = state.user.name;
+      document.getElementById('archetype').textContent = state.user.archetype;
+      document.getElementById('gp').textContent = gp;
+      const de = document.getElementById('done-n'); if(de) de.textContent = dc;
+      const ln = document.getElementById('lesson-n'); if(ln) ln.textContent = Math.min(dc+1, tc);
+      const be = document.getElementById('bar'); if(be) be.style.width = pct + '%';
+      const nl = document.getElementById('next-lesson');
+      const curId = Math.min(dc + 1, tc);
+      if(nl && state.lessons[curId-1]){
+        nl.textContent = state.lessons[curId-1].t;
+      }
+      // BC: статус покупки курса во вкладке «Развитие»
+      const up = document.getElementById('up-status');
+      if(up){
+        if(state.isPaid){
+          up.textContent = '✅ Доступ к курсу открыт. Смотри уроки во вкладке «Курс»';
+          const tw = document.getElementById('up-tripwire');
+          const fl = document.getElementById('up-full');
+          if(tw) tw.style.display = 'none';
+          if(fl) fl.style.display = 'none';
+        } else {
+          up.textContent = 'Открой доступ, чтобы продолжить после урока 1';
+          const tw = document.getElementById('up-tripwire');
+          const fl = document.getElementById('up-full');
+          if(tw) tw.style.display = '';
+          if(fl) fl.style.display = '';
+        }
+      }
+      // GH: архетип-персонализация Hero (hyper-personalization 2026)
+      const archLine = document.getElementById('arch-line');
+      if(archLine){
+        const arch = state.user.archetype || 'Куратор Вайба';
+        const map = {
+          'Куратор Вайба': 'Твой вайб — собирать сеты под настроение 🎚️',
+          'Техничный Сеттер': 'Техника — твой конёк. Сведение ждёт 🎛️',
+          'Открыватель Звука': 'Ищи новое звучание. Эксперименты впереди 🔊',
+          'Хранитель Атмосферы': 'Создавай атмосферу. Глубина — твоё 🌫️',
+        };
+        archLine.textContent = map[arch] || 'Твой путь DJ начинается здесь 🎧';
+      }
+      document.getElementById('discount').textContent = `Твоя скидка: −${Math.min(gp, 7000)} ⭐`;
+      // автоскидка менторства
+      const discAmt = Math.min(gp, 7000);
+      const finalStars = Math.max(14000, 21000 - discAmt);
+      const mf = document.getElementById('mentor-final');
+      if(mf) mf.textContent = finalStars + ' ⭐';
+      const gb = document.getElementById('gp-balance');
+      if(gb) gb.textContent = gp + ' ⭐';
+      // профиль
+      const tsArch = document.getElementById('ts-arch');
+      if(tsArch) tsArch.textContent = state.user.archetype || 'Куратор Вайба';
+      const pb = document.getElementById('avatar-big');
+      if(pb && userPhoto) {
+        pb.style.backgroundImage = `url("${userPhoto}")`;
+        pb.style.backgroundSize = 'cover';
+        pb.style.backgroundPosition = 'center';
+        pb.textContent = '';
+      } else if(pb) {
+        pb.textContent = (state.user.name[0]||"Д");
+      }
+      document.getElementById('prof-name') && (document.getElementById('prof-name').textContent = state.user.name);
+      document.getElementById('prof-archetype') && (document.getElementById('prof-archetype').textContent = state.user.archetype);
+      document.getElementById('prof-gp') && (document.getElementById('prof-gp').textContent = gp);
+      document.getElementById('prof-done') && (document.getElementById('prof-done').textContent = dc);
+      // ---- Динамическая кнопка Play (п.2): новому юзеру — «Начать урок 1», продолжающему — «Продолжить урок N» ----
+      const pl = document.getElementById('play-label');
+      if(pl){
+        if(dc === 0){ pl.textContent = 'Начать урок 1'; }
+        else if(dc >= tc){ pl.textContent = 'Курс пройден 🎉'; }
+        else if(!state.isPaid){ pl.textContent = 'Открыть доступ · 500 ⭐'; }   // BC: CTA покупки
+        else { pl.textContent = 'Продолжить · урок ' + Math.min(dc+1, tc); }
+      }
+      // ---- Бесплатная скидка: прогресс по теории и рефералке (вкладка «Развитие») ----
+      const tp = document.getElementById('theory-progress');
+      if(tp){ const b = state.user.bonusLessons || 0; tp.textContent = `${b} / 4 пройдено`; }
+      const rm = document.getElementById('ref-progress-mini');
+      if(rm){ rm.textContent = `${(state.user.referralFriends||0)} друзей • ${(state.user.referralGpEarned||0)} ⭐`; }
+    }
+    updateUI();
+    function applyAvatar(){
+      document.querySelectorAll('.user-avatar').forEach(av=>{
+        if(av){
+          if(userPhoto){
+            av.style.backgroundImage = `url("${userPhoto}")`;
+            av.style.backgroundSize = 'cover';
+            av.style.backgroundPosition = 'center';
+            av.style.backgroundRepeat = 'no-repeat';
+            av.style.backgroundColor = 'transparent';
+            av.textContent = '';
+          } else {
+            av.style.backgroundImage = '';
+            av.textContent = (state.user.name[0]||"Д");
+          }
+        }
+      });
+    }
+    applyAvatar();
+    // ---- PLAY: инициализация через /api/init — заменяет loadProfile+loadProgress ---- 
+    function initApp(){
+      // включить skeleton на ключевых метриках (пока летит API)
+      ['gp','done-n','lesson-n','next-lesson','bar-wrap'].forEach(id=>{
+        const el = document.getElementById(id); if(el) el.classList.add('skel');
+      });
+      const startParam = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) || null;
+      // DeviceStorage — загружаем кеш мгновенно, пока летит API
+      if(tg.DeviceStorage){
+        try {
+          const cached = tg.DeviceStorage.get('completed');
+          if(cached){
+            const arr = JSON.parse(cached);
+            if(Array.isArray(arr)) state.courseProgress.completedLessons = arr.slice();
+            updateUI();
+          }
+        } catch(_){}
+      }
+      fetch(API_BASE + '/api/init', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ init_data: tg.initData || '', start_param: startParam })
+      }).then(r=>r.ok?r.json():null).then(j=>{
+        if(j){
+          state.user.groovePoints = j.user.groove_points;
+          state.user.referralCode = j.user.referral_code || '';
+          state.user.referralFriends = j.referral_friends || 0;
+          state.user.referralGpEarned = j.referral_gp_earned || 0;
+          state.user.bonusLessons = j.user.bonus_lessons || 0;
+          state.courseProgress.completedLessons = (j.course.completed_lessons || []).slice();
+          if(IS_ADMIN) savedCompleted = (j.course.completed_lessons || []).slice(); // запомнить реальный прогресс БД
+          state.user.archetype = j.user.archetype || 'Куратор Вайба';
+          state.isPaid = !!(j.paid);            // PLAY A: флаг оплаты для пейвола
+          state.paidFull = !!(j.paid_full);
+          state.freeLessons = (j.course && j.course.free_lessons) || 1;
+          updateUI();
+          // (обучающий онбординг «зачем ⭐» теперь микро-подсказкой на дашборде — см. .micro-hint)
+          // Снять skeleton (данные пришли)
+          ['gp','done-n','lesson-n','next-lesson','bar-wrap'].forEach(id=>{
+            const el = document.getElementById(id); if(el) el.classList.remove('skel');
+          });
+          // A/B: узнать назначенные варианты (для локализации/персонализации UI)
+          try {
+            fetch(API_BASE + '/api/ab/assign', { headers:{'X-Init-Data': tg.initData || ''} })
+              .then(r=>r.ok?r.json():null).then(ab=>{
+                if(ab && !ab.error){
+                  state.ab = ab;
+                  applyLocalization(ab.localization);
+                }
+              }).catch(()=>{});
+          } catch(_){}
+          // Сохранить в DeviceStorage (Bot API 9.0+)
+          if(tg.DeviceStorage){
+            try { tg.DeviceStorage.set('completed', JSON.stringify(state.courseProgress.completedLessons)); } catch(_){}
+          }
+          if(j.bonus && j.bonus.message){
+            setTimeout(()=> showToast('🎁', j.bonus.message), 600);
+          }
+        } else {
+          // /api/init вернул не-JSON (ошибка сервера) — пробуем legacy, иначе рендерим локально
+          legacyLoad(()=> showOffline());
+        }
+      }).catch(()=> legacyLoad(()=> showOffline()));
+    }
+    // Показать контент из локального state (режим просмотра) и компактный баннер,
+    // чтобы главная НЕ превращалась в «огромную табличку не удалось загрузить».
+    function showOffline(){
+      updateUI();                       // рендерим уроки/прогресс из state
+      ['gp','done-n','lesson-n','next-lesson','bar-wrap'].forEach(id=>{
+        const el = document.getElementById(id); if(el) el.classList.remove('skel');
+      });
+    }
+    function legacyLoad(onFail){
+      fetch(API_BASE + '/api/profile', {headers:{'X-Init-Data': tg.initData || ''}})
+        .then(r=>r.ok?r.json():null).then(j=>{ if(j){
+          state.courseProgress.completedLessons = j.completed.slice();
+          state.user.groovePoints = j.gp || 0;
+          state.user.referralCode = j.referral_code || '';
+          state.user.referralFriends = j.referral_friends || 0;
+          state.user.referralGpEarned = j.referral_gp_earned || 0;
+          state.user.bonusLessons = j.bonus_lessons || 0;
+          updateUI();
+          ['gp','done-n','lesson-n','next-lesson','bar-wrap'].forEach(id=>{
+            const el = document.getElementById(id); if(el) el.classList.remove('skel');
+          });
+        } else if(onFail){ onFail(); }}).catch(()=>{ if(onFail) onFail(); });
+    }
+    initApp();
+    document.getElementById('prof-name') && (document.getElementById('prof-name').textContent = state.user.name);
+
+    // ---- PLAY: toast, share, gp ----
+    function showToast(icon, msg){
+      const t = document.getElementById('toast');
+      if(!t) return;
+      document.getElementById('toast-ic').textContent = icon || '✨';
+      document.getElementById('toast-msg').innerHTML = msg;
+      t.classList.add('show');
+      setTimeout(()=> t.classList.remove('show'), 4000);
+    }
+    // staged-onboarding: помечать «видел тултип», чтобы не спамить (Trophy: мягкие подсказки лучше туториалов)
+    function seenTip(key){
+      try { return !!JSON.parse(tg.DeviceStorage.get('tips') || '{}')[key]; } catch(_){ return false; }
+    }
+    function markTip(key){
+      try { const o = JSON.parse(tg.DeviceStorage.get('tips') || '{}'); o[key]=1; tg.DeviceStorage.set('tips', JSON.stringify(o)); } catch(_){}
+    }
+    function shareInvite(){
+      const code = state.user.referralCode;
+      if(!code){ showToast('⚠️', 'Код приглашения пока не загружен'); return; }
+      const deepLink = 'https://t.me/OpenDeck_bot/app?startapp=ref_' + code;
+      haptic('notificationOccurred');
+      navigator.clipboard.writeText(deepLink).catch(()=>{});
+      showToast('✅', 'Ссылка скопирована!<br>Вставь в чат — появится кнопка «Открыть»');
+    }
+    // E2: Share-your-archetype Team Loop — флагман гэймификации (Octalysis: identity > points)
+    // Пользователь шерит карточку СВОЕГО архетипа (DJ-персоны) с зашитой рефералкой.
+    // Это White-Hat: шерится личность, не «+20⭐ за друга» → выше конверсия, не спам.
+    function shareArchetype(){
+      const arch = state.user.archetype || 'Куратор Вайба';
+      const gp = state.user.groovePoints || 0;
+      const done = state.courseProgress.completedLessons.length;
+      const code = state.user.referralCode;
+      if(!code){ showToast('⚠️', 'Реф-код не загружен'); return; }
+      haptic('notificationOccurred');
+      // карточка (canvas) — рисуем клиентски, сервер не грузим
+      const cv = document.createElement('canvas');
+      cv.width = 1080; cv.height = 1080;
+      const x = cv.getContext('2d');
+      const g = x.createLinearGradient(0,0,1080,1080);
+      g.addColorStop(0,'#2b302e'); g.addColorStop(1,'#1c201e');
+      x.fillStyle = g; x.fillRect(0,0,1080,1080);
+      x.fillStyle = '#8ce2c8'; x.font = 'bold 72px sans-serif'; x.textAlign='center';
+      x.fillText('🎧 Open Deck', 540, 360);
+      x.fillStyle = '#ffffff'; x.font = 'bold 96px sans-serif';
+      x.fillText(arch, 540, 500);
+      x.fillStyle = '#c0a0a8'; x.font = '40px sans-serif';
+      x.fillText(done + ' уроков · ' + gp + ' ⭐', 540, 600);
+      x.fillStyle = '#f5926e'; x.font = 'bold 44px sans-serif';
+      x.fillText('Собери свою команду DJ →', 540, 720);
+      const link = 'https://t.me/OpenDeck_bot/app?startapp=ref_' + code;
+      cv.toBlob(async (blob)=>{
+        const file = (blob && blob.size) ? new File([blob], 'archetype.png', {type:'image/png'}) : null;
+        // в TG WebView — нативный шер в Stories
+        if(window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.shareToStory){
+          try { window.Telegram.WebApp.shareToStory(link, { text: 'Я — ' + arch + ' 🎧 в Open Deck. Собери команду!' }); }
+          catch(_){}
+        }
+        // вне TG / фолбэк — Web Share API с картинкой, либо копия ссылки
+        if(file && navigator.canShare && navigator.canShare({files:[file]})){
+          try { await navigator.share({ files:[file], text: link }); } catch(_){}
+        } else if(navigator.share){
+          try { await navigator.share({ text: link }); } catch(_){}
+        } else {
+          navigator.clipboard.writeText(link).catch(()=>{});
+          showToast('✅', 'Ссылка скопирована!<br>Поделись — появится кнопка «Открыть»');
+        }
+        // СЕРВЕР — единственный авторитет по GP: фронт НЕ начисляет сам
+        fetch(API_BASE + '/api/archetype/share', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','X-Init-Data':(window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp.initData:'')}
+        }).then(r=>r.ok?r.json():null).then(j=>{
+          if(j && typeof j.groove_points === 'number'){
+            state.user.groovePoints = j.groove_points;
+            updateUI();
+            if(j.amount > 0) showToast('🎉', 'Команда растёт! +' + j.amount + ' ⭐');
+            else showToast('✅', 'Карточка уже в деле — команда ждёт!');
+          } else {
+            showToast('✅', 'Карточка отправлена!');
+          }
+        }).catch(()=> showToast('⚠️', 'Не удалось начислить ⭐, но шер прошёл'));
+      }, 'image/png');
+    }
+    // E: Геймификация — weekly streak + achievements (фронтенд-only)
+    function loadStreak(){
+      try { return JSON.parse(tg.DeviceStorage.get('streak') || '{"days":{}, "count":0, "last":""}'); }
+      catch(_){ return {days:{}, count:0, last:""}; }
+    }
+    function saveStreak(s){
+      try { tg.DeviceStorage.set('streak', JSON.stringify(s)); } catch(_){}
+    }
+    function bumpStreak(){
+      // отметить сегодняшний день серии (раз в сутки)
+      const s = loadStreak();
+      const today = new Date().toISOString().slice(0,10);
+      if(s.last === today) return s; // уже отмечен сегодня
+      const yest = new Date(Date.now()-864e5).toISOString().slice(0,10);
+      if(s.last === yest || s.last === ""){ s.count = (s.last === yest) ? s.count+1 : 1; }
+      else { s.count = 1; } // серия сброшена (пропуск >1 дня)
+      s.last = today;
+      s.days[today] = 1;
+      saveStreak(s);
+      // streak freeze: если count >= 5 — напоминание защитить серию (четверг вечер — пик потерь)
+      return s;
+    }
+    function renderStreak(){
+      const s = loadStreak();
+      const el = document.getElementById('streak-num');
+      if(el) el.textContent = s.count > 0 ? (s.count + ' дн.') : '—';
+      const wk = document.getElementById('streak-week');
+      if(!wk) return;
+      const labels = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+      const now = new Date();
+      const monday = new Date(now);
+      monday.setDate(now.getDate() - ((now.getDay()+6)%7));
+      wk.innerHTML = '';
+      for(let i=0;i<7;i++){
+        const d = new Date(monday); d.setDate(monday.getDate()+i);
+        const key = d.toISOString().slice(0,10);
+        const done = !!s.days[key];
+        const cell = document.createElement('div');
+        cell.style.cssText = 'flex:1;text-align:center;font-size:10px;color:var(--text-secondary);';
+        cell.innerHTML = '<div style="height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;'+
+          (done ? 'background:linear-gradient(135deg,var(--accent-coral),var(--accent-mint));' : 'background:rgba(255,255,255,0.06);')+'">'+
+          (done ? '🔥' : labels[i][0]) + '</div><div style="margin-top:3px">'+labels[i]+'</div>';
+        wk.appendChild(cell);
+      }
+      // E: streak freeze за GP (Trophy: freeze +17 дней серии)
+      const freezeWrap = document.getElementById('streak-freeze');
+      if(freezeWrap){
+        const gp = state.user.groovePoints || 0;
+        if(s.count >= 3 && gp >= 75 && !s.frozen){
+          freezeWrap.style.display = '';
+          freezeWrap.innerHTML = '<button class="btn ghost" style="width:100%;padding:8px;font-size:12px" onclick="buyStreakFreeze()">'+
+            '🧊 Заморозить серию (75 ⭐) — защити прогресс</button>';
+        } else {
+          freezeWrap.style.display = 'none';
+        }
+      }
+    }
+    function buyStreakFreeze(){
+      const s = loadStreak();
+      if(s.frozen){ showToast('🧊','Серия уже заморожена'); return; }
+      const gp = state.user.groovePoints || 0;
+      if(gp < 75){ showToast('⭐','Нужно 75 ⭐ для заморозки'); return; }
+      // списать GP через бэкенд (идемпотентно не критично — фронт-маркер)
+      fetch(API_BASE + '/api/gp/spend', {
+        method:'POST', headers:{'Content-Type':'application/json','X-Init-Data': tg.initData || ''},
+        body: JSON.stringify({amount:100, reason:'streak_freeze'})
+      }).then(r=>r.ok?r.json():null).then(j=>{
+        if(j && j.gp !== undefined) state.user.groovePoints = j.gp;
+        else state.user.groovePoints = Math.max(0, gp - 100);
+        s.frozen = true;
+        saveStreak(s);
+        showToast('🧊','Серия заморожена! Не сгорит при пропуске дня');
+        renderStreak(); updateUI();
+      }).catch(()=>{
+        // офлайн — просто отмечаем локально
+        state.user.groovePoints = Math.max(0, gp - 100);
+        s.frozen = true; saveStreak(s); renderStreak(); updateUI();
+      });
+    }
+    // E: rewarded-механика — бесплатные GP (OmiSoft P2E-кейс)
+    function earnGP(action){
+      // фронт-cooldown (дублирует бэкенд, чтобы не слать лишние запросы)
+      try {
+        const cd = JSON.parse(tg.DeviceStorage.get('earn_cd') || '{}');
+        if(cd[action] && Date.now() - cd[action] < 864e5){
+          showToast('⏳', 'Доступно через 24ч');
+          return;
+        }
+      } catch(_){}
+      showToast('⏳', 'Начисляем...');
+      fetch(API_BASE + '/api/gp/earn', {
+        method:'POST', headers:{'Content-Type':'application/json','X-Init-Data': tg.initData || ''},
+        body: JSON.stringify({action})
+      }).then(r=>r.ok?r.json():r.json().then(j=>({_err:j.error}))).then(j=>{
+        if(j._err){
+          if(j._err === 'cooldown') showToast('⏳', 'Доступно через 24ч');
+          else showToast('❌', 'Ошибка начисления');
+          return;
+        }
+        state.user.groovePoints = j.groove_points;
+        // отметить cooldown локально
+        try {
+          const cd = JSON.parse(tg.DeviceStorage.get('earn_cd') || '{}');
+          cd[action] = Date.now();
+          tg.DeviceStorage.set('earn_cd', JSON.stringify(cd));
+        } catch(_){}
+        const labels = {share:'📤 Поделиться', daily:'📅 Ежедневный бонус', review:'⭐ Отзыв'};
+        showToast('✅', `${labels[action]||'Действие'}: +${j.amount} ⭐`);
+        updateUI();
+      }).catch(()=>{
+        showToast('❌', 'Ошибка сети');
+      });
+    }
+    function renderAchievements(){
+      const dc = state.courseProgress.completedLessons.length;
+      const arch = state.user.archetype || 'Куратор Вайба';
+      const box = document.getElementById('ach-list');
+      if(!box) return;
+      const streakObj = loadStreak();
+      const streakDays = (streakObj && streakObj.count) || 0;
+      const bonusDone = (state.user.bonusLessons || 0);
+      // ачивки: лёгкие по прогрессу + сложные (Trophy: сложные → 74% retention vs 32% лёгких)
+      const achs = [
+        {id:'first', name:'Первый бит', ico:'🎚️', got: dc>=1, desc:'Пройди урок 1'},
+        {id:'half',  name:'Половина пути', ico:'📀', got: dc>=3, desc:'Пройди 3 урока'},
+        {id:'all',   name:'DJ-сет собран', ico:'🎧', got: dc>=6, desc:'Пройди все 6 уроков'},
+        // сложные
+        {id:'theory', name:'Теоретик', ico:'📚', got: bonusDone>=4, desc:'Досмотри все 4 бонус-урока (теорию)'},
+        {id:'streak', name:'В ритме', ico:'🔥', got: streakDays>=7, desc:'Серия 7 дней подряд'},
+        {id:'refer', name:'Наставник', ico:'👥', got: (state.user.referralFriends||0)>=3, desc:'Пригласи 3 друзей'},
+        {id:'arch',  name:'Архетип раскрыт', ico:'✨', got: !!arch, desc:'Получи свой архетип'},
+      ];
+      box.innerHTML = '';
+      achs.forEach(a=>{
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;'+
+          (a.got ? 'background:rgba(140,226,200,0.10);border:1px solid rgba(140,226,200,0.25);' : 'background:rgba(255,255,255,0.03);opacity:.55;');
+        row.innerHTML = '<span style="font-size:20px">'+(a.got?a.ico:'🔒')+'</span>'+
+          '<div style="flex:1"><div style="font-size:13px;font-weight:600">'+a.name+'</div>'+
+          '<div style="font-size:11px;color:var(--text-secondary)">'+a.desc+'</div></div>'+
+          (a.got ? '<span style="font-size:11px;color:var(--accent-mint)">✓</span>' : '');
+        box.appendChild(row);
+      });
+    }
+    function updateGamification(){
+      renderStreak();
+      renderAchievements();
+    }
+
+    // A/B: локализация (заглушка — готова к расширению текстов)
+    function applyLocalization(variant){
+      if(variant === 'en'){
+        document.documentElement.lang = 'en';
+        // TODO: подставить en-строки в i18n-объект (когда будет готов)
+      } else {
+        document.documentElement.lang = 'ru';
+      }
+    }
+
+    function updateUIRefLink(){
+      const fc = document.getElementById('ref-friends');
+      if(fc){
+        const n = state.user.referralFriends || 0;
+        const gp = state.user.referralGpEarned || 0;
+        // ближайший милестоун и его награда (двусторонний + бонусы за покупку)
+        const MS = {1: 100, 3: 300, 5: 1000, 10: 2500};
+        const nextN = [1,3,5,10].find(m => m > n);
+        let hint = '';
+        if(nextN !== undefined){
+          const reward = (nextN-1)*500 + MS[nextN];  // база 500/покупка + милестоун
+          hint = ` • до +${reward} ⭐ осталось ${nextN - n}`;
+        }
+        fc.textContent = '👥 ' + n + ' друг' + (n===1?'':'ей') + ' • ' + gp + ' ⭐ заработано' + hint;
+        const milestones = [1,3,5,10];
+        const next = milestones.find(m => m > n) || milestones[milestones.length-1];
+        const pct = Math.min(100, (n / next) * 100);
+        const bar = document.getElementById('ref-bar');
+        if(bar) bar.style.width = pct + '%';
+        // Этап 5 staged-onboarding: празднуем достижение милестоуна (3/5/10 друзей)
+        if(MS[n] !== undefined && !seenTip('ms_'+n)){
+          markTip('ms_'+n);
+          const labels = {1:'Первый друг!', 3:'Ты — наставник 🔥', 5:'Реф-лидер ⭐', 10:'Легенда школы 👑'};
+          setTimeout(()=> showToast('🎉', `${labels[n]} <b>+${MS[n]} ⭐</b> бонусом за ${n} друз${n===1?'а':'ей'}!`), 400);
+        }
+      }
+    }
+
+    function switchTab(tab){
+      haptic('impactOccurred');
+      stopVideoAll();   // остановить видео при уходе с урока
+      ['home','course','bonus','upgrade','profile'].forEach(t=>{
+        document.getElementById('tab-'+t).classList.toggle('hidden', t!==tab);
+      });
+      document.querySelectorAll('#nav button').forEach(b=>{
+        b.classList.toggle('active', b.dataset.tab===tab);
+      });
+      if(tab==='course') renderCourse();
+      if(tab==='upgrade'){
+        updateUI();
+        // (пояснение «часть ⭐ бесплатно» теперь микро-подсказкой в блоке «Бесплатная скидка»)
+      }
+      if(tab==='profile'){ updateUIRefLink(); updateGamification(); }
+      if(tab==='bonus') renderBonus();
+    }
+    function goCourse(){ switchTab('course'); }
+
+    // BC: кнопка Hero. Если урок 1 пройден, но доступ не куплен —
+    // сразу ведём в paywall (Day-0 конверсия по Adapty: 90% trial в первой сессии).
+    function heroPlay(){
+      const dc = state.courseProgress.completedLessons.length;
+      if(!state.isPaid && dc >= 1){
+        showPaywall('dj-basics');
+        return;
+      }
+      switchTab('course');
+    }
+
+    function renderBonus(){
+      const box = document.getElementById('tab-bonus');
+      box.innerHTML = '<h2 style="font-size:20px;margin-bottom:6px">🎁 Бонусные уроки</h2>'
+        + '<p style="color:var(--text-secondary);font-size:13px;margin:0 0 14px">Теория курса — смотри в свободное время. <b>За каждый бонус-урок +200 ⭐</b> (жирнее, чем основной).</p>'
+        + '<div class="micro-hint">Бонус-уроки — это теория. Досмотришь все 4 → ачивка «Теоретик» и <b>+800 ⭐</b> на скидку курса.</div>';
+      // (одноразовый тултип bonus_theory заменён на микро-подсказку выше)
+      // Рисуем уроки СРАЗУ из локального state (без задержки на сеть),
+      // затем, если API ответил, перерисовываем с реальным прогрессом.
+      paintBonus(null, box);
+      fetch(API_BASE + '/api/lessons-bonus', {
+        headers:{'X-Init-Data': tg.initData || ''}
+      }).then(r=>r.ok?r.json():null).then(j=>{ if(j) paintBonus(j, box); }).catch(()=>{});
+      function paintBonus(j, box){
+        // Graceful fallback: если API недоступен (401/сеть/Failed to fetch) — показываем уроки
+        // из локального state в режиме просмотра, а не «Не удалось загрузить».
+        if(!box){ box = document.getElementById('tab-bonus'); }
+        if(!j){ j = { lessons: state.bonusLessons || [], completed: [], unlocked_count: 1, total_main: 6 }; }
+        // убираем ранее отрисованные уроки (чтобы при перерисовке с API не дублировались)
+        box.querySelectorAll('.lesson').forEach(n=>n.remove());
+        const comp = (j.completed || []).slice().sort((a,b)=>a-b);
+        let unlocked = j.unlocked_count || 1;   // сколько бонусов уже открыто
+        if(ADMIN_MODE) unlocked = (j.lessons && j.lessons.length) ? j.lessons.length : (state.bonusLessons ? state.bonusLessons.length : 0); // тест: открыть все бонусы
+        const totalMain = j.total_main || 6;
+        // берём контент из state.bonusLessons (title/d/video), порядок — по id
+        const byId = {};
+        (state.bonusLessons||[]).forEach(b=>{ byId[b.id] = b; });
+        // если бэкенд прислал titles — используем их, иначе из state
+        const lessons = (j.lessons && j.lessons.length) ? j.lessons : Object.values(byId);
+        lessons.forEach(l=>{
+          const id = l.id;
+          const content = byId[id] || l;
+          const done = comp.includes(id);
+          let open = id <= unlocked;              // открыт по порядку
+          if(ADMIN_MODE) open = true;             // тест: открыть всё
+          const locked = !open;
+          const el = document.createElement('div');
+          el.className = 'lesson' + (done?' done':'') + (locked?' locked':'');
+          let iconHTML;
+          if(done){
+            iconHTML = '<svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';
+          } else if(locked){
+            iconHTML = '<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+          } else {
+            iconHTML = id;
+          }
+          // подсказка: какой урок основного курса нужен для открытия
+          const needMain = id - 1;  // Бонус N открывается после урока N-1
+          // подпись снизу — как у основных уроков: отдельный блок, цвет accent-mint
+          const ttl = (content.t || l.title || ('Бонус ' + id));
+          const sub = (content.d && content.d[0]) ? content.d[0] : (l.d && l.d[0] ? l.d[0] : '');
+          const hint = locked
+            ? `<span class="hint">Откроется после урока ${needMain} основного курса</span>`
+            : '';
+          const ttlHTML = `<div class="ttl">${esc(ttl)}${sub?`<span class="sub">${esc(sub)}</span>`:''}${hint}</div>`;
+          el.innerHTML = `<div class="num">${iconHTML}</div>${ttlHTML}`;
+          if(open && !done){ el.onclick = ()=> openBonusLesson(id, content); }
+          box.appendChild(el);
+        });
+      }
+
+      window.openBonusLesson = function(id, lesson){
+        const box = document.getElementById('tab-bonus');
+        const pid = 'b' + (++playerUid); activePlayerId = pid;  // уникальный id плеера (фикс дублей)
+        const bullets = (lesson.d||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+        const src = lesson.video || "";
+        const isYT = src.includes('youtube.com/embed') || src.includes('youtu.be');
+        const playerHTML = src
+          ? (isYT ? `<div class="vwrap" id="vw-${pid}"><iframe id="ytplayer-${pid}" style="position:absolute;inset:0;width:100%;height:100%;border:0" src="https://www.youtube.com/embed/${ytId(src)}?playsinline=1&rel=0&modestbranding=1&fs=1&enablejsapi=1" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe><div class="wm" id="wm-${pid}">${esc(userName)}</div><div class="vbar"><button onclick="ytPlayToggle()" title="Play/Pause"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><div class="seek" id="seek-${pid}" onclick="ytSeek(event)"><i id="seekbar-${pid}"></i></div></div></div>` : `<div class="vwrap" id="vw-${pid}"><video id="v-${pid}" playsinline></video><div class="wm" id="wm-${pid}">${esc(userName)}</div><div class="bigplay" id="bp-${pid}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div><div class="vbar"><button onclick="vwPlay()" title="Play/Pause"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><div class="seek" id="seek-${pid}" onclick="vwSeek(event)"><i id="seekbar-${pid}"></i></div></div></div>`)
+          : `<div class="player"><svg class="play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>`;
+        box.innerHTML = `<button class="btn ghost" style="width:auto;padding:10px 16px;margin-bottom:14px" onclick="renderBonus()">← Назад</button>
+          <h2 style="font-size:20px;margin-bottom:14px">${esc(lesson.title)}</h2>
+          ${playerHTML}
+          <ul class="summary">${bullets}</ul>
+          <button class="btn" id="finishBtn-${pid}" style="opacity:0.4;pointer-events:none" onclick="completeBonusLesson(${id})">Завершить урок (+200 ⭐)</button>
+          <p class="hint" id="finishHint-${pid}" style="text-align:center;color:var(--text-secondary);font-size:12px;margin-top:10px">Досмотри видео до конца – и кнопка станет активной</p>`;
+        if(src && !isYT) setupVideo(src, pid);
+        else if(src && isYT) enableYTControls(src, pid);
+      };
+
+      window.completeBonusLesson = function(id){
+        if(!state.courseProgress.completedBonusLessons) state.courseProgress.completedBonusLessons = [];
+        if(!state.courseProgress.completedBonusLessons.includes(id)){
+          state.courseProgress.completedBonusLessons.push(id);
+          haptic('notificationOccurred');
+          burst();
+          // ADMIN-режим: тест UI, НЕ пишем прогресс в базу
+          if(ADMIN_MODE){
+            renderBonus();
+            return;
+          }
+          // бонусы не требуют оплаты, но дают +50 GP
+          fetch(API_BASE + '/api/progress', {
+          method:'POST',
+          headers:{'Content-Type':'application/json','X-Init-Data': tg.initData || ''},
+          body: JSON.stringify({course_id:'dj-bonus', lesson_id:id, bonus:true})
+          }).then(r=>{
+            if(r.ok) return r.json();
+            tg.showPopup && tg.showPopup({title:'Ошибка', message:'Прогресс не сохранён ☁️'});
+            return null;
+          }).then(j=>{
+            if(j){
+              state.user.groovePoints = j.gp;
+              renderBonus();
+            }
+          }).catch(()=>{
+            tg.showPopup && tg.showPopup({title:'Сеть', message:'Проверь подключение к интернету ☁️'});
+          });
+        }
+        renderBonus();
+      };
+    }
+
+    function renderCourse(){
+      const box = document.getElementById('tab-course');
+      box.innerHTML = '<h2 style="font-size:20px;margin-bottom:14px">Курс «Pocket DJ»</h2>';
+      const comp = state.courseProgress.completedLessons.slice().sort((a,b)=>a-b);
+      const lastDone = comp.length ? comp[comp.length-1] : 0;
+      const maxOpen = lastDone + 1; // доступен следующий после пройденного
+      state.lessons.forEach((l, i)=>{
+        const id = i+1;
+        const done = comp.includes(id);
+        let open = id <= maxOpen;          // пройден или следующий
+        if(ADMIN_MODE) open = true;          // админ-тест: открыть все уроки
+        // «текущий» = первый непройденный (следующий открытый)
+        state.courseProgress.currentLessonId = maxOpen;
+        const locked = !open;
+        const active = id === state.courseProgress.currentLessonId;
+        const el = document.createElement('div');
+        el.className = 'lesson' + (done?' done':'') + (active?' active':'') + (locked?' locked':'');
+        const parts = l.t.split(':');
+        const main = parts[0];
+        const sub = parts.slice(1).join(':').trim();
+        let iconHTML;
+        if(done){
+          iconHTML = '<svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';
+        } else if(locked){
+          iconHTML = '<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+        } else {
+          iconHTML = id;
+        }
+        const hint = locked ? '<span class="hint">Откроется после предыдущего урока</span>' : '';
+        const ttlHTML = `<div class="ttl">${main}${sub?`<span class="sub">${sub}</span>`:''}${hint}</div>`;
+        el.innerHTML = `<div class="num">${iconHTML}</div>${ttlHTML}`;
+        el.style.animationDelay = (i * 55) + 'ms';
+        if(open){ el.onclick = ()=> openLesson(id, l); }
+        box.appendChild(el);
+      });
+      // Inline-CTA после урока 1 (вместо попапа): пригласить друга + открыть доступ.
+      // Показываем навсегда после прохождения урока 1 — без блокировки и без таймеров.
+      if(comp.includes(1)){
+        const cta = document.createElement('div');
+        cta.className = 'cta-inline';
+        cta.innerHTML =
+          '<div class="t">Понравилось? Позови напарника в дуэт — <b>дар</b>им по <b>100 ⭐</b> вам обоим 🎧. Приведёшь 3-х друзей — ещё <b>+300 ⭐</b>.</div>' +
+          '<div class="row">' +
+            '<button class="btn" style="background:var(--accent-coral)" onclick="shareInvite()">Пригласить друга</button>' +
+            (state.isPaid ? '' : '<button class="btn mint" style="color:#10201b" onclick="showPaywall(\'tripwire\')">Открыть доступ · 500 ⭐</button>') +
+          '</div>';
+        box.appendChild(cta);
+      }
+    }
+
+    function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function openLesson(id, l){
+      const pid = 'c' + (++playerUid); activePlayerId = pid;  // уникальный id плеера (фикс дублей)
+      // PLAY A: платный урок (не из бесплатного порога) и нет доступа → сразу paywall, без видео
+      const isFreeLesson = (id <= (state.freeLessons || 1));
+      if(!state.isPaid && !isFreeLesson){
+        showPaywall('dj-basics');
+        return;
+      }
+      document.body.style.filter='';   // снять защитное размытие при открытии урока
+      // BackButton — показать при открытии урока
+      try { tg.BackButton && tg.BackButton.show(); } catch(_){}
+      try { tg.BackButton && tg.BackButton.onClick(function(){ renderCourse(); try { tg.BackButton.hide(); } catch(_){} }); } catch(_){}
+      const box = document.getElementById('tab-course');
+      const bullets = (l.d||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+      const src = l.video || "";
+      const isYT = src.includes('youtube.com/embed') || src.includes('youtu.be');
+      const playerHTML = src
+        ? (isYT
+            ? `<div class="vwrap" id="vw-${pid}">
+                         <iframe id="ytplayer-${pid}" style="position:absolute;inset:0;width:100%;height:100%;border:0"
+                           src="https://www.youtube.com/embed/${ytId(src)}?playsinline=1&rel=0&modestbranding=1&fs=1&enablejsapi=1"
+                           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                           allowfullscreen></iframe>
+                         <div class="wm" id="wm-${pid}">${esc(userName)}</div>
+                         <div class="vbar">
+                           <button onclick="ytPlayToggle()" title="Play/Pause"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+                           <div class="seek" id="seek-${pid}" onclick="ytSeek(event)"><i id="seekbar-${pid}"></i></div>
+                         </div></div>`
+            : `<div class="vwrap" id="vw-${pid}"><video id="v-${pid}" playsinline></video>
+             <div class="wm" id="wm-${pid}">${esc(userName)}</div>
+             <div class="bigplay" id="bp-${pid}"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+             <div class="vbar">
+               <button onclick="vwPlay()" title="Play/Pause"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+               <div class="seek" id="seek-${pid}" onclick="vwSeek(event)"><i id="seekbar-${pid}"></i></div>
+               <button class="spd" onclick="vwSpeed()" title="Скорость">1×</button>
+             </div></div>`)        : `<div class="player"><svg class="play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>`;
+      box.innerHTML = `<button class="btn ghost" style="width:auto;padding:10px 16px;margin-bottom:14px" onclick="renderCourse()">← Назад</button>
+        <h2 style="font-size:20px;margin-bottom:14px">${esc(l.t)}</h2>
+        ${playerHTML}
+        <ul class="summary">${bullets}</ul>
+        <button class="btn" id="finishBtn-${pid}" style="opacity:0.4;pointer-events:none" onclick="completeLesson(${id})">Завершить урок (+50 ⭐)</button>
+        <p class="hint" id="finishHint-${pid}" style="text-align:center;color:var(--text-secondary);font-size:12px;margin-top:10px">Досмотри видео до конца – и кнопка станет активной</p>`;
+      if(src && !isYT) setupVideo(src, pid);
+      else if(src && isYT) enableYTControls(src, pid);
+    }
+
+    let vwVid=null, vwHls=null, ytPlayer=null, ytTimer=null;
+    let activePlayerId = null;   // id активного плеера (решает коллизию id между course/bonus)
+    let playerUid = 0;
+
+    // Остановить ВСЁ видео при уходе со страницы / сворачивании
+    function stopVideoAll(){
+      if(ytTimer){ clearInterval(ytTimer); ytTimer=null; }
+      if(vwVid){ try{ vwVid.pause(); }catch(e){} }
+      if(ytPlayer && ytPlayer.pauseVideo){ try{ ytPlayer.pauseVideo(); }catch(e){} }
+    }
+
+    // Достаём ID видео из ссылки вида .../embed/XXXX или youtu.be/XXXX
+    function ytId(src){
+      const m = src.match(/(?:embed\/|youtu\.be\/|v=)([A-Za-z0-9_-]{6,})/);
+      return m ? m[1] : '';
+    }
+    // YouTube грузится через прямой <iframe> (надёжнее в webview Telegram),
+    // управление (play/pause/seek) — опционально через postMessage API.
+    function enableYTControls(src){
+      const id = ytId(src);
+      if(!id) return;
+      // Попытка подключить YT API для кнопок Play/Pause и полосы перемотки.
+      // Если API не загрузится (блок webview) — видео всё равно играет через iframe.
+      const onApi = ()=>{
+        try{
+          ytPlayer = new YT.Player('ytplayer-'+pid, {
+            events: {
+              onStateChange: (e)=>{ if(e.data === YT.PlayerState.ENDED) markWatched(); }
+            }
+          });
+          if(ytTimer) clearInterval(ytTimer);
+          ytTimer = setInterval(()=>{
+            try{
+              if(ytPlayer && ytPlayer.getDuration){
+                const d = ytPlayer.getDuration(), c = ytPlayer.getCurrentTime();
+                if(d > 0 && c / d >= 0.95) markWatched();
+                const sb = document.getElementById('seekbar-'+pid); if(sb) sb.style.width = (c/(d||1)*100)+'%';
+              }
+            }catch(_){}
+          }, 2000);
+        }catch(_){}
+      };
+      if(window.YT && window.YT.Player){ onApi(); }
+      else {
+        window.onYouTubeIframeAPIReady = onApi;
+        if(!document.getElementById('yt-api')){
+          const s = document.createElement('script');
+          s.id = 'yt-api'; s.src = 'https://www.youtube.com/iframe_api';
+          document.head.appendChild(s);
+        }
+      }
+    }
+
+    function markWatched(){
+      const btn = document.getElementById('finishBtn-'+activePlayerId);
+      const hint = document.getElementById('finishHint-'+activePlayerId);
+      if(btn){ btn.style.opacity='1'; btn.style.pointerEvents='auto'; }
+      if(hint){ hint.style.display='none'; }
+    }
+    function setupVideo(src, pid){
+      const v=document.getElementById('v-'+pid); vwVid=v;
+      const bp=document.getElementById('bp-'+pid);
+      if(src.endsWith('.m3u8') && window.Hls && Hls.isSupported()){
+        vwHls=new Hls(); vwHls.loadSource(src); vwHls.attachMedia(v);
+      } else { v.src=src; }
+      bp.onclick=()=>{ v.play(); bp.style.display='none'; };
+      v.addEventListener('timeupdate',()=>{ const s=document.getElementById('seekbar-'+pid); if(s) s.style.width=(v.currentTime/(v.duration||1)*100)+'%';
+        if(v.duration && v.currentTime/v.duration >= 0.95) markWatched(); });
+      v.addEventListener('ended', ()=> markWatched());
+      const vw=document.getElementById('vw-'+pid);
+      vw.addEventListener('click',()=>vw.classList.add('showbar'));
+      setTimeout(()=>vw&&vw.classList.remove('showbar'),2500);
+    }
+    function vwPlay(){ if(!vwVid) return; vwVid.paused?vwVid.play():vwVid.pause(); }
+    function vwSpeed(){ if(!vwVid) return; const r=[1,1.25,1.5,0.75]; let i=r.indexOf(vwVid.playbackRate); i=(i+1)%r.length; vwVid.playbackRate=r[i]; const sp=document.querySelector('#vw-'+activePlayerId+' .vbar .spd'); if(sp) sp.textContent=r[i]+'×'; }
+    function vwSeek(e){ if(!vwVid) return; const b=document.getElementById('seek-'+activePlayerId).getBoundingClientRect(); vwVid.currentTime=((e.clientX-b.left)/b.width)*(vwVid.duration||0); }
+
+    // YouTube-плеер: свои кнопки Play/Pause и полоса перемотки
+    function ytPlayToggle(){
+      if(!ytPlayer || !ytPlayer.getPlayerState) return;
+      const s = ytPlayer.getPlayerState();
+      if(s === 1) ytPlayer.pauseVideo(); else ytPlayer.playVideo();
+    }
+    function ytSeek(e){
+      if(!ytPlayer || !ytPlayer.getDuration) return;
+      const b = document.getElementById('seek-'+activePlayerId).getBoundingClientRect();
+      const frac = (e.clientX-b.left)/b.width;
+      ytPlayer.seekTo(frac * ytPlayer.getDuration(), true);
+    }
+
+    function completeLesson(id){
+      if(!state.courseProgress.completedLessons.includes(id)){
+        state.courseProgress.completedLessons.push(id);
+        haptic('notificationOccurred');
+        burst();
+        // E: отметить день серии (геймификация, фронтенд-only)
+        try { bumpStreak(); } catch(_){}
+        // ADMIN-режим: тест UI, НЕ пишем прогресс в базу (чтобы не портить реальный GP/прогресс)
+        if(ADMIN_MODE){
+          updateUI();
+          renderCourse();
+          return;
+        }
+        // СОХРАНИТЬ В БАЗУ и получить актуальные GP
+        try{
+          fetch(API_BASE + '/api/progress', {
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-Init-Data': tg.initData || ''},
+            body: JSON.stringify({course_id:'dj-basics', lesson_id:id})
+          }).then(r=>{
+            if(r.status === 403){
+              // PLAY A: дыра воронки закрыта — не пишем локально, а показываем paywall
+              const sk = document.getElementById('finishBtn');
+              if(sk){ sk.style.opacity='0.4'; sk.style.pointerEvents='none'; }
+              showPaywall('dj-basics');
+              return null;
+            }
+            if(r.ok) return r.json();
+            tg.showPopup && tg.showPopup({title:'Ошибка', message:'Прогресс не сохранён ☁️'});
+            return null;
+          }).then(j=>{
+            if(j){
+              state.user.groovePoints = j.gp;
+              state.courseProgress.completedLessons = j.completed.slice();
+              updateUI();
+              // Сохранить в DeviceStorage
+              if(tg.DeviceStorage){
+                try { tg.DeviceStorage.set('completed', JSON.stringify(state.courseProgress.completedLessons)); } catch(_){}
+              }
+              // ---- Редирект на Upgrade после прохождения ВСЕГО курса (п.2) ----
+              if(state.courseProgress.completedLessons.length >= state.lessons.length){
+                setTimeout(()=>{
+                  tg.showPopup && tg.showPopup({title:'Поздравляем! 🎉', message:'Ты прошёл весь курс. Готов к следующему уровню — менторству?'});
+                  switchTab('upgrade');
+                }, 900);
+              }
+              // CTA «пригласи друга / открой доступ» теперь inline-блоком на экране курса (renderCourse), не попапом
+            }
+          }).catch(()=>{
+            tg.showPopup && tg.showPopup({title:'Сеть', message:'Проверь подключение к интернету ☁️'});
+          });
+        }catch(e){}
+      }
+      renderCourse();
+    }
+
+    function burst(){
+      const b = document.createElement('div'); b.className='burst';
+      const colors=['#8ce2c8','#f5926e','#c0a0a8','#ffffff'];
+      for(let i=0;i<24;i++){
+        const s=document.createElement('span');
+        const ang=Math.random()*Math.PI*2, dist=60+Math.random()*120;
+        s.style.setProperty('--x', Math.cos(ang)*dist+'px');
+        s.style.setProperty('--y', Math.sin(ang)*dist+'px');
+        s.style.background=colors[i%colors.length];
+        s.style.animationDelay=(Math.random()*0.1)+'s';
+        b.appendChild(s);
+      }
+      document.body.appendChild(b);
+      setTimeout(()=>b.remove(), 1000);
+    }
+
+    // Единый paywall: курс + выбор способа (Stars / карта). currentPaywallCourse
+    // используется кнопками pw-stars / pw-card. Цены берём из COURSE_PRICES.
+    let currentPaywallCourse = 'dj-basics';
+    const COURSE_PRICES = {
+      'tripwire': { stars: '500 ⭐', rub: '≈ 850 ₽' },
+      'dj-basics': { stars: '2100 ⭐', rub: '≈ 3570 ₽' },
+    };
+    function showPaywall(courseId){
+      currentPaywallCourse = courseId || 'dj-basics';
+      const p = COURSE_PRICES[currentPaywallCourse] || COURSE_PRICES['dj-basics'];
+      const sp = document.getElementById('pw-stars-price');
+      const cp = document.getElementById('pw-card-price');
+      if(sp) sp.textContent = p.stars;
+      if(cp) cp.textContent = p.rub + ' · МИР · Visa · СБП';
+      const pw = document.getElementById('paywall');
+      if(pw) pw.classList.remove('hidden');
+      haptic('impactOccurred');
+    }
+    function hidePaywall(){
+      const pw = document.getElementById('paywall');
+      if(pw) pw.classList.add('hidden');
+      // PLAY A: если пейвол открыли из completeLesson (403), finishBtn был
+      // заблокирован — восстанавливаем, чтобы юзер мог выйти с экрана урока.
+      const sk = document.getElementById('finishBtn');
+      if(sk){ sk.style.opacity=''; sk.style.pointerEvents=''; }
+      const btn = document.querySelector('#paywall .btn');
+      if(btn) btn.disabled = false;
+    }
+    // PLAY A+: покупка курса через Prodamus (карта/СБП РФ).
+    // ВАЖНО: открываем ВНЕШНИМ браузером (tg.openLink), НЕ в webview Mini App —
+    // чтобы снизить риск бана бота и корректно принять 3-D Secure / СБП.
+    // Подтверждение оплаты придёт webhook-ом на бэкенд, юзер вернётся в Mini App
+    // по urlSuccess (авто-обновление state через pollHasPaid).
+    function bookPayProdamus(courseId){
+      showToast('⏳', 'Создаём платёж...');
+      const btn = document.getElementById('pw-prodamus');
+      if(btn) btn.disabled = true;
+      fetch(API_BASE + '/api/create-invoice', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Init-Data': tg.initData || ''},
+        body: JSON.stringify({ course_id: courseId, provider: 'prodamus' })
+      }).then(r=>r.ok ? r.json() : r.json().then(()=>null)).then(data=>{
+        if(btn) btn.disabled = false;
+        if(!data || !data.pay_url){
+          const detail = data && data.error ? data.error : '';
+          if(detail === 'prodamus_not_configured'){
+            showToast('⚠️', 'Prodamus не настроен. Попробуй Stars.');
+          } else {
+            showToast('❌', 'Не удалось создать платёж. Попробуй позже.');
+          }
+          return;
+        }
+        // открываем платёжную страницу Prodamus во внешнем браузере
+        try {
+          if(tg.openLink){ tg.openLink(data.pay_url); }
+          else { window.open(data.pay_url, '_blank'); }
+        } catch(_){
+          window.open(data.pay_url, '_blank');
+        }
+        showToast('💳', 'Оплата открылась в браузере. Вернись сюда после оплаты.');
+        // фоновый опрос: как только webhook выдаст доступ — обновляем UI
+        pollHasPaid(courseId);
+      }).catch(()=>{
+        if(btn) btn.disabled = false;
+        showToast('❌', 'Ошибка сети. Проверь подключение.');
+      });
+    }
+
+    // Опрашиваем бэкенд, пока не подтвердится оплата (webhook от Prodamus).
+    function pollHasPaid(courseId){
+      let tries = 0;
+      const timer = setInterval(async () => {
+        tries++;
+        if(tries > 30){ clearInterval(timer); return; } // ~60с
+        try {
+          const r = await fetch(API_BASE + '/api/lessons?course_id=' + courseId, {
+            headers:{'X-Init-Data': tg.initData || ''}
+          });
+          const j = await r.json();
+          if(j && j.paid){
+            clearInterval(timer);
+            state.isPaid = true;
+            if(courseId === 'dj-basics') state.paidFull = true;
+            hidePaywall();
+            try { closeLesson(); } catch(_){}
+            renderCourse();
+            updateUI();
+            showToast('✅', 'Доступ открыт! Смотри все уроки 🎧');
+          }
+        } catch(_){}
+      }, 2000);
+    }
+
+    // PLAY A: покупка курса (tripwire / full) через Telegram Stars (нативно).
+    // Бот зафиксирует платёж по successful_payment -> /api/grant, а фронт
+    // обновит state, чтобы пейвол больше не мешал.
+    function bookPay(courseId){
+      showToast('⏳', 'Создаём счёт...');
+      const btn = document.getElementById('pw-stars');
+      if(btn) btn.disabled = true;
+      fetch(API_BASE + '/api/create-invoice', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Init-Data': tg.initData || ''},
+        body: JSON.stringify({ course_id: courseId })
+      }).then(r=>r.ok ? r.json() : r.json().then(()=>null)).then(data=>{
+        if(btn) btn.disabled = false;
+        if(!data || !data.invoice_link){
+          showToast('❌', 'Не удалось создать счёт. Попробуй позже.');
+          return;
+        }
+        tg.openInvoice(data.invoice_link, (status) => {
+          if(status === 'paid'){
+            state.isPaid = true;
+            if(courseId === 'dj-basics') state.paidFull = true;
+            hidePaywall();
+            try { closeLesson(); } catch(_){}
+            renderCourse();
+            updateUI();
+            showToast('✅', 'Доступ открыт! Смотри все уроки 🎧');
+          } else if(status === 'cancelled'){
+            showToast('👋', 'Платёж отменён');
+          } else {
+            showToast('❌', 'Ошибка оплаты');
+          }
+        });
+      }).catch(()=>{
+        if(btn) btn.disabled = false;
+        showToast('❌', 'Ошибка сети. Проверь подключение.');
+      });
+    }
+
+    function bookMentor(){
+      const gp = state.user.groovePoints || 0;
+      const discAmt = Math.min(gp, 7000);
+      const finalPrice = Math.max(14000, 21000 - discAmt);
+      showToast('⏳', 'Создаём счёт...');
+      const btn = document.querySelector('.offer .btn');
+      if(btn) btn.disabled = true;
+      fetch(API_BASE + '/api/create-invoice', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-Init-Data': tg.initData || ''},
+        body: JSON.stringify({ course_id:'mentoring', price: finalPrice })
+      }).then(r=>r.ok ? r.json() : r.json().then(()=>null)).then(data=>{
+        if(btn) btn.disabled = false;
+        if(!data || !data.invoice_link){
+          showToast('❌', 'Не удалось создать счёт. Попробуй позже.');
+          return;
+        }
+        tg.openInvoice(data.invoice_link, (status) => {
+          if(status === 'paid'){
+            // ⚠️ НЕ зовём /api/gp/apply и /api/referral/purchase отсюда!
+            // Цена инвойса уже снижена на сервере (1 GP = 1 Star, max 7000).
+            // Списание GP и реф-бонус инвайтеру (+200 ⭐) фиксирует БОТ
+            // по successful_payment (идемпотентно по charge_id). Повторный
+            // вызов от фронта привёл бы к двойному списанию GP / накрутке.
+            showToast('✅', 'Оплачено! Персональное менторство — твоё 🎉');
+            setTimeout(()=> initApp(), 500);
+          } else if(status === 'cancelled'){
+            showToast('👋', 'Платёж отменён');
+          } else {
+            showToast('❌', 'Ошибка оплаты');
+          }
+        });
+      }).catch(()=>{
+        if(btn) btn.disabled = false;
+        showToast('❌', 'Ошибка сети. Проверь подключение.');
+      });
+    }
+
+    function openChat(){
+      const link='https://t.me/+S9cLCiFHbWQzY2Iy';
+      if(tg.openTelegramLink) tg.openTelegramLink(link);
+      else location.href=link;
+    }
+
+    function openSupport(){
+      if(tg.showPopup){
+        tg.showPopup({
+          title:'Поддержка',
+          message:'По всем вопросам — в чат Open Deck DJ Camp или пиши @OpenDeck_bot. Отвечаем в течение дня 🎧',
+          buttons:[{type:'default', text:'Открыть чат'},{type:'cancel', text:'Закрыть'}]
+        }, (btn)=>{ if(btn==='Открыть чат') openChat(); });
+      } else {
+        openChat();
+      }
+    }
+
+    function openRules(){
+      const msg = 'Open Deck — бесплатная часть курса + бонусы за прогресс.\n\n'
+        + '⭐ Stars (GP) начисляются за пройденные уроки и приглашённых друзей, '
+        + 'дают скидку на менторство (макс. 7000 ⭐, итог не ниже 14000 ⭐).\n\n'
+        + 'Оплата — через Telegram Stars. Возврат по запросу в поддержке.';
+      if(tg.showPopup){
+        tg.showPopup({title:'Правила и офферта', message:msg, buttons:[{type:'ok'}]});
+      } else {
+        alert(msg);
+      }
+    }
+
+    function comingSoon(title, text){
+      if(tg.showPopup){
+        tg.showPopup({title:title, message:text, buttons:[{type:'ok'}]});
+      } else {
+        alert(text);
+      }
+    }
+
+    function toggleManifest(idx){
+      const panel = document.getElementById('m-panel');
+      const btns = document.querySelectorAll('.m-row .m-btn');
+      if(!panel || !btns.length) return;
+
+      const data = [
+        { title: 'Звук Тишины в Шумном Мире', body: 'Мы живем в эпоху бесконечного шума. Информационный перегруз, постоянное сравнение, гонка за внешними маркерами успеха. В этом хаосе легко потерять свою истинную частоту, заглушить внутренний голос. Open Deck – это не школа диджеинга в традиционном смысле. Это, скорее, ретрит для души, возможность найти ту самую тишину, в которой рождается подлинное творчество.' },
+        { title: 'Открытость как Акт Мужества', body: 'Искусство – это всегда риск. Риск быть непонятым, неуслышанным. Но настоящий художник понимает, что только через полную открытость, через обнажение своего сердца, он может создать нечто по-настоящему глубокое и резонансное. Мы не стремимся к техническому совершенству ради совершенства. Мы стремимся к эмоциональной искренности. Когда ты выходишь к пульту, ты не просто сводишь треки. Ты делишься частью своей души. И чем более открыто ты это делаешь, тем сильнее отклик.' },
+        { title: 'Разрушение Барьеров, Создание Потока', body: 'Правила, жанры, ожидания – все это лишь рамки, которые мы сами себе ставим. Истинное творчество начинается там, где эти рамки исчезают. Мы не учим тебя следовать трендам. Мы учим тебя их создавать. Мы не учим тебя бояться ошибок. Мы учим тебя видеть в них новую возможность, новый путь. Музыка – это поток. И твоя задача как диджея – не контролировать его, а стать его частью, позволить ему течь сквозь тебя. Когда твой разум открыт, ты не просто играешь музыку – ты являешься музыкой.' }
+      ];
+
+      const isSame = btns[idx].classList.contains('open');
+      btns.forEach((b,i) => { b.classList.toggle('open', !isSame && i === idx); });
+      if(isSame){
+        panel.classList.remove('open');
+      } else {
+        document.getElementById('m-title').textContent = data[idx].title;
+        document.getElementById('m-body').textContent = data[idx].body;
+        panel.classList.add('open');
+      }
+    }
+  </script>
+</body>
+</html>
