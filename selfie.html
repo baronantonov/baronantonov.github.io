@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Селфи для разбана | anton baronov</title>
+  <style>
+    :root {
+      --bg: #0d1116;
+      --card: #151a23;
+      --accent: #3b82f6;
+      --accent2: #10b981;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --border: #2a3038;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 24px; }
+    header { text-align: center; margin-bottom: 24px; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 4px; }
+    .sub { color: var(--muted); font-size: 0.95rem; }
+    .tag {
+      display: inline-block; background: rgba(16,185,129,0.15); color: var(--accent2);
+      border: 1px solid rgba(16,185,129,0.3); padding: 2px 10px; border-radius: 12px;
+      font-size: 0.75rem; margin-left: 8px; vertical-align: middle;
+    }
+    .hero {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 22px; text-align: center; margin-bottom: 20px;
+    }
+    .hero p { margin: 8px 0; font-size: 1.05rem; }
+    .hero .lead { color: var(--accent); font-weight: 600; font-size: 1.3rem; }
+    .section {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px 20px; margin-bottom: 18px;
+    }
+    .section h2 { font-size: 1.15rem; margin-bottom: 10px; color: var(--text); }
+    .section p, li { color: #c9d1d9; margin-bottom: 8px; font-size: 0.95rem; }
+    ul { padding-left: 22px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid2 > div { background: #0d1116; border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+    .grid2 .price { font-size: 1.25rem; font-weight: 700; color: var(--accent); margin: 6px 0; }
+    .grid2 .label { font-size: 0.9rem; color: var(--muted); }
+    .grid2 .note { font-size: 0.8rem; color: #8b949e; }
+    .free { color: var(--accent2); }
+    .btn {
+      display: block; width: 100%; text-align: center;
+      background: var(--accent); color: #fff; border: none; border-radius: 10px;
+      padding: 13px; font-size: 1rem; font-weight: 600; cursor: pointer;
+      text-decoration: none; margin-top: 6px;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .9; }
+    .btn.sm { padding: 9px 14px; font-size: 0.85rem; border-radius: 8px; }
+    .btn-telegram { background: #0088cc; }
+    .small { font-size: 0.8rem; }
+    .center { text-align: center; }
+    .cta-strip {
+      background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 12px; padding: 16px; text-align: center; margin: 14px 0;
+    }
+    .cta-strip .btn { margin-top: 0; }
+    footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 14px; }
+    code { background: #1f242d; padding: 1px 5px; border-radius: 4px; font-size: 0.85rem; color: #79c0ff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Селфи для разбана <span class="tag">10 бесплатно</span></h1>
+      <p class="sub">Рандомные портреты — для верификации / разбана / подтверждения лица в Instagram, Telegram, TikTok, ботах</p>
+    </header>
+
+    <div class="hero">
+      <p>Нужно <span class="lead">100 — 3 000 селфи</span> по быстрому?</p>
+      <p>Генерирую пакет за часы —  <strong>10 штук бесплатно</strong>, чтобы ты сразу понял качество.</p>
+      <p class="small">Без копий реальных лиц — рандом, но проходит проверку.</p>
+    </div>
+
+    <div class="section">
+      <h2>Тарифы</h2>
+      <p>Оплата: <strong>USDT / USDC</strong> (TON-сеть, <1$). Первые 10 — бесплатно без оплаты.</p>
+      <div class="grid2">
+        <div>
+          <div class="label">10 шт</div>
+          <div class="price free">БЕСПЛАТНО</div>
+          <div class="note small">Тест — сразу в Telegram</div>
+        </div>
+        <div>
+          <div class="label">100 шт</div>
+          <div class="price">100 USDT</div>
+          <div class="note small">Готово за часы</div>
+        </div>
+        <div>
+          <div class="label">1 000 шт</div>
+          <div class="price">300 USDT</div>
+          <div class="note small">Готово за ~1 день</div>
+        </div>
+        <div>
+          <div class="label">3 000 шт</div>
+          <div class="price">500 USDT</div>
+          <div class="note small">Готово за 1–2 дня</div>
+        </div>
+      </div>
+      <p class="small" style="margin-top:12px">Свыше 3 000 — договорная цена с объёмной скидкой. Поддержка: Instagram / Telegram / TikTok / Telegram-боты.</p>
+    </div>
+
+    <div class="section">
+      <h2>Как это работает</h2>
+      <ol>
+        <li>Пишишь в Telegram <a href="https://t.me/baronantonov" style="color:var(--accent)">@baronantonov</a>: какой пакет, под какую платформу.</li>
+        <li>Я сразу отсылаю <strong>10 тестовых бесплатно</strong>, чтобы ты видел формат и качество.</li>
+        <li>Если ок — выбираешь тариф, оплачиваешь USDT на кошелёк (прямо в переписке, без посредников).</li>
+        <li>Генерирую пакет за часы и отсылаю архивом / ссылкой.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Почему не <code>This Person Does Not Need</code></h2>
+      <ul>
+        <li>Они дают <strong>по одному фото</strong> — ты сам листаешь, отбираешь, скачиваешь вручную.</li>
+        <li>Тут — <strong>целый пакет</strong> под твою задачу: нужное количество, нужных типов, в одном архиве.</li>
+        <li>Плюс — <strong>10 штук бесплатно</strong> и поддержка в Telegram, а не автомат одной страницы.</li>
+      </ul>
+    </div>
+
+    <div class="cta-strip">
+      <div class="small" style="margin-bottom:8px">Готов клиенту @baronantonov — проверено: уже запущено.</div>
+      <a href="https://t.me/baronantonov" class="btn btn-telegram">Написать в Telegram @baronantonov</a>
+    </div>
+
+    <p class="small center" style="margin-top:6px">Цены в USDT (1 USDT ≈ $1, оплата по курсу сети). Генерация — ИИ, без копий реальных людей.</p>
+
+    <footer style="margin-top:12px">anton baronov&nbsp;&middot;&nbsp;AI-интегратор&nbsp;&middot;&nbsp;удалёнка Вьетнам</footer>
+  </div>
+</body>
+</html>
