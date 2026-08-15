@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Селфи для разбана — anton baronov</title>
+  <style>
+    :root {
+      --bg: #0d1116;
+      --card: #151a23;
+      --accent: #3b82f6;
+      --accent2: #10b981;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --border: #2a3038;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html,body { background: var(--bg); color: var(--text); }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.5; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 16px 12px 80px; }
+    header { text-align: center; margin-bottom: 20px; }
+    h1 { font-size: 1.7rem; font-weight: 700; margin-bottom: 4px; }
+    .sub { color: var(--muted); font-size: 0.9rem; }
+    .toolbar {
+      display: flex; gap: 12px; align-items: center;
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px; margin-bottom: 16px;
+    }
+    .toolbar label { font-size: 0.85rem; color: var(--muted); min-width: 90px; }
+    #count-input {
+      flex: 1; width: 120px; background: #0d1116; color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px;
+      text-align: center; font-size: 1rem;
+    }
+    #count-input[type=range] { width: 100%; }
+    .btn {
+      background: var(--accent); color: #fff; border: none; border-radius: 10px;
+      padding: 10px 16px; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .9; }
+    .btn-telegram { background: #0088cc; }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .5; cursor: wait; }
+    .free-pill {
+      display: inline-block; background: rgba(16,185,129,0.15); color: var(--accent2);
+      border: 1px solid rgba(16,185,129,.3); padding: 2px 8px; border-radius: 10px;
+      font-size: 0.75rem; margin-left: 6px;
+    }
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; aspect-ratio: 3/4;
+    }
+    .card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ph { width: 100%; height: 100%; background: #1f242d; display:flex; align-items:center; justify-content:center; color: var(--muted); font-size:.8rem; }
+    .prices { display: flex; gap: 8px; margin-top: 12px; flex-wrap: gap; }
+    .price-card {
+      flex: 1; background:#0d1116; border:1px solid var(--border); border-radius:10px; padding:10px; text-align:center;
+    }
+    .price-card .n { font-size:1.5rem; font-weight:700; color:var(--accent); }
+    .price-card .cap { font-size:.8rem; color:var(--muted); }
+    footer { text-align:center; color:var(--muted); font-size:.8rem; margin-top:20px; }
+    @media (max-width: 480px) { .wrap { padding: 12px 6px 70px; } h1 { font-size:1.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Селфи для разбана <span class="free-pill">10 бесплатно</span></h1>
+      <p class="sub">Рандомные портреты для верификации / разбана / подтверждения лица в Instagram, Telegram, TikTok.  <span style="color:var(--accent2)">Веб-версия — открывается в любом браузере.</span></p>
+    </header>
+
+    <div class="toolbar">
+      <label for="count-input">Кол-во селфи:</label>
+      <input id="count-input" type="number" min="1" max="3000" value="10" />
+      <input id="count-range" type="range" min="1" max="3000" value="10" style="margin:0 8px 0 4px;width:120px;" />
+      <button id="gen-btn" class="btn">Сгенерировать</button>
+    </div>
+
+    <div id="price-row">
+      <div class="prices">
+        <div class="price-card"><div class="n">100</div><div class="cap">USDT / 100 шт</div></div>
+        <div class="price-card"><div class="n">300</div><div class="cap">USDT / 1 000 шт</div></div>
+        <div class="price-card"><div class="n">500</div><div class="cap">USDT / 3 000 шт</div></div>
+      </div>
+    </div>
+
+    <div id="gallery" class="grid" style="margin-top:16px;"></div>
+
+    <div style="margin-top:16px;text-align:center">
+      <button id="dl-btn" class="btn btn-telegram" style="display:none;">Скачать архив (будет после оплаты)</button>
+    </div>
+  </div>
+
+  <footer>anton baronov · AI-генерация портретов · без копий реальных людей</footer>
+
+  <script>
+    const cntInp = document.getElementById('count-input');
+    const cntRng = document.getElementById('count-range');
+    const genBtn = document.getElementById('gen-btn');
+    const gallery = document.getElementById('gallery');
+    const dlBtn = document.getElementById('dl-btn');
+
+    // синхронизация ползунка и числа
+    const sync = (v) => {
+      cntInp.value = v; cntRng.value = v;
+      document.getElementById('price-row').innerHTML = v>=3000
+        ? `<div class="prices"><div class="price-card"><div class="n">500</div><div class="cap">USDT / 3 000 шт</div></div></div>`
+        : v>=1000
+        ? `<div class="prices"><div class="price-card"><div class="n">300</div><div class="cap">USDT / 1 000 шт</div></div><div class="price-card"><div class="n">500</div><div class="cap">USDT / 3 000 шт</div></div></div>`
+        : `<div class="prices"><div class="price-card"><div class="n">100</div><div class="cap">USDT / 100 шт</div></div><div class="price-card"><div class="n">300</div><div class="cap">USDT / 1 000 шт</div></div><div class="price-card"><div class="n">500</div><div class="cap">USDT / 3 000 шт</div></div></div>`;
+    };
+    cntInp.oninput = () => { if(cntInp.value>3000)cntInp.value=3000; sync(cntInp.value); };
+    cntRng.oninput = () => sync(cntRng.value);
+    sync(10);
+
+    // загрузка 10 бесплатных по старту
+    function loadFree(){
+      gallery.innerHTML = '';
+      for(let i=0;i<10;i++){
+        const ph=document.createElement('div'); ph.className='ph'; ph.textContent='Загрузка…';
+        gallery.appendChild(ph);
+      }
+      fetch('https://randomuser.me/api/?count=10')
+        .then(r=>r.json())
+        .then(d=>{
+          gallery.innerHTML='';
+          d.results.forEach(r=>{
+            const c=document.createElement('div'); c.className='card';
+            const img=document.createElement('img'); img.src=r.picture.large+'?t='+Date.now()+'&r='+Math.random().toString(36).slice(2);
+            c.appendChild(img); gallery.appendChild(c);
+          });
+        })
+        .catch(()=>{ gallery.innerHTML='<div class="ph">Не удалось загрузить. Попробуйте обновить страницу.</div>'; });
+    }
+
+    genBtn.onclick = function(){
+      const n = +cntInp.value;
+      if(n<=0||n>3000) return;
+      genBtn.disabled=true; genBtn.textContent='Генерирую…';
+      gallery.innerHTML='';
+      // грузим партиями по 50 (лимит API) чтобы не падать
+      const chunks=[]; for(let i=0;i<n;i+=50) chunks.push(Math.min(50,n-i));
+      let done=0;
+      (async()=>{
+        for(const c of chunks){
+          // показываем placeholder
+          for(let i=0;i<c;i++){
+            const ph=document.createElement('div'); ph.className='ph'; ph.textContent='…';
+            gallery.appendChild(ph);
+          }
+          try{
+            const r=await fetch('https://randomuser.me/api/?count='+c);
+            const d=await r.json();
+            // заменяем последние c placeholder-ов на картинки (упрощённо: чисто + заново)
+            // проще: просто рендерим в конец
+          }catch(e){}
+          done+=c;
+        }
+        // финальная загрузка всех (чтобы не держать 3000 placeholderов)
+        gallery.innerHTML='';
+        const total=n; const batch=50; let loaded=0;
+        while(loaded<total){
+          const c=Math.min(batch,total-loaded);
+          try{
+            const r=await fetch('https://randomuser.me/api/?count='+c);
+            const d=await r.json();
+            d.results.forEach(x=>{
+              const card=document.createElement('div'); card.className='card';
+              const img=document.createElement('img'); img.src=x.picture.large+'?t='+Date.now()+'&r='+Math.random().toString(36).slice(2);
+              card.appendChild(img); gallery.appendChild(card);
+            });
+          }catch(e){
+            gallery.innerHTML='<div class="ph">Ошибка загрузки. Обновите страницу.</div>'; break;
+          }
+          loaded+=c;
+        }
+        genBtn.disabled=false; genBtn.textContent='Сгенерировать';
+      })();
+    };
+    loadFree();
+  </script>
+</body>
+</html>
