@@ -1103,6 +1103,179 @@ html, body {
   }
 }
 
+
+/* ==========================================
+   СОВРЕМЕННАЯ ТИПОГРАФИКА И ВЕРСТКА КАРТОЧЕК ХОЛСТА
+   ========================================== */
+.canvas-node-card {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border: 1.5px solid #D8D0C3;
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(24, 23, 21, 0.07), 0 1px 3px rgba(24, 23, 21, 0.04);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  user-select: none;
+  overflow: hidden;
+  position: relative;
+}
+.canvas-node-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(140, 45, 25, 0.16), 0 2px 6px rgba(140, 45, 25, 0.08);
+  border-color: var(--accent-seal);
+}
+.canvas-node-card.selected {
+  border-color: var(--accent-seal);
+  border-width: 2px;
+  box-shadow: 0 0 0 3px rgba(140, 45, 25, 0.22), 0 8px 26px rgba(140, 45, 25, 0.2);
+}
+
+/* Ветви рода */
+.canvas-node-card.pat {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F3F7FA 100%);
+  border-left: 5px solid #285987;
+}
+.canvas-node-card.mat {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FDF7F3 100%);
+  border-left: 5px solid #8C2D19;
+}
+.canvas-node-card.self {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EA 100%);
+  border-left: 5px solid #B5933C;
+}
+
+/* Аватар */
+.card-avatar-wrap {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F4EFE6;
+  border: 2px solid #E2D9CC;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.card-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.card-avatar-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: #2E6B4E;
+  color: #FFF;
+  font-size: 9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #FFF;
+}
+.card-avatar-emoji {
+  font-size: 26px;
+  line-height: 1;
+}
+.card-avatar-rank {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 800;
+  color: #285987;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+/* Контент карточки */
+.card-content-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.card-id {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #857E70;
+}
+.card-badge {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 1.5px 5.5px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.card-role {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent-seal);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.canvas-node-card.pat .card-role {
+  color: #285987;
+}
+.canvas-node-card.self .card-role {
+  color: #9E7818;
+}
+.card-name {
+  font-family: var(--font-serif);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #181715;
+  line-height: 1.22;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: normal;
+}
+.card-dates {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #4A443B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+.card-place {
+  font-size: 9.5px;
+  color: #7B7264;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
 </style>
 </head>
 <body>
@@ -1192,7 +1365,7 @@ html, body {
           </div>
         </div>
         <div class="canvas-viewport" id="canvas-viewport">
-          <svg id="tree-svg-canvas" width="2250" height="1520" viewBox="0 0 2250 1520">
+          <svg id="tree-svg-canvas" width="2800" height="1720" viewBox="0 0 2800 1720">
             <defs>
               <!-- Градиенты карточек -->
               <linearGradient id="grad-pat" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1233,7 +1406,21 @@ html, body {
             </defs>
             <g id="canvas-pan-zoom-group">
               <!-- СХЕМАТИЧЕСКАЯ КРОНА И ВЕТВИ ДРЕВА РОДА -->
-              <g id="canvas-tree-botany-group"></g>
+              <g id="canvas-tree-botany-group" opacity="0.12" stroke="#8C7A60" fill="none" stroke-linecap="round">
+                <!-- Основной ствол от корней к союзу родителей и предкам -->
+                <path d="M 1150 1700 C 1150 1560, 1150 1460, 1150 1350" stroke-width="12" />
+                <!-- Разветвление к отцовской ветви (Бароновы и Шепеленко) -->
+                <path d="M 1150 1350 C 900 1300, 600 1200, 480 1000" stroke-width="8" />
+                <path d="M 480 1000 C 350 900, 250 820, 180 740" stroke-width="5" />
+                <path d="M 480 1000 C 520 900, 580 820, 610 740" stroke-width="5" />
+                <!-- Разветвление к материнской ветви (Евдокимовы и Беловы) -->
+                <path d="M 1150 1350 C 1400 1300, 1700 1200, 1820 1000" stroke-width="8" />
+                <path d="M 1820 1000 C 1650 900, 1550 820, 1400 740" stroke-width="5" />
+                <path d="M 1820 1000 C 1820 900, 1820 820, 1820 740" stroke-width="6" />
+                <path d="M 1820 1000 C 1950 900, 2150 820, 2350 740" stroke-width="5" />
+                <path d="M 1820 740 C 1820 620, 1770 540, 1770 480" stroke-width="6" />
+                <path d="M 1770 480 C 1770 380, 1770 280, 1770 120" stroke-width="5" />
+              </g>
               <!-- ФОНОВАЯ РАЗМЕТКА ПОКОЛЕНИЙ -->
               <g id="canvas-generation-bands"></g>
               <!-- СОЕДИНИТЕЛЬНЫЕ ЛИНИИ РОДСТВА -->
@@ -1659,6 +1846,26 @@ const PERSONS = [
     relatives: "Отец: Александр Белов (P-0014); 1-й муж: Николай Никандрович Евдокимов (P-0007); 2-й муж: Егор; Сын: Александр Николаевич Евдокимов (P-0004)",
     rationale: "Подтверждена независимым пересечением родословной таблицы [A-0004..A-0006] и прямой фотографии надгробного памятника с прижизненным портретом [A-0007].",
     artifacts: ["A-0004", "A-0005", "A-0006", "A-0007"]
+  },
+  {
+    id: "P-0013",
+    gen: 4,
+    genRoman: "IV ПОКОЛЕНИЕ",
+    genTitle: "Сестра прадеда Николая",
+    genEra: "р. ок. 1885–1900",
+    role: "Двоюродная прабабушка",
+    name: "Вера Никандровна (урожд. Евдокимова)",
+    dates: "р. ок. 1885–1900",
+    place: "г. Чистополь, Казанская губерния / ТАССР",
+    status: "corroborated",
+    statusClass: "st-corr",
+    badgeClass: "badge-corr",
+    namesAsWritten: "Сестра деда Вера баба крёсна + Федя г. Чистополь, дети Шура, Женя",
+    jurisdiction: "г. Чистополь, Чистопольский уезд / ТАССР",
+    occupation: "Мещанка / крестьянка",
+    relatives: "Отец: Никандр Михайлович (P-0009); Братья: Николай (P-0007), Ефим (P-0012); Муж: Фёдор; Дети: Александр («Шура»), Евгений («Женя»)",
+    rationale: "Зафиксирована в рукописной поколенной росписи семьи Нины Александровны [A-0006]: «Сестра деда Вера баба крёсна + Федя г. Чистополь, дети Шура, Женя».",
+    artifacts: ["A-0006"]
   },
   {
     id: "P-0017",
@@ -2105,20 +2312,8 @@ function selectPerson(personId) {
     btn.classList.toggle("selected", btn.getAttribute("data-person-id") === p.id);
   });
   // Подсветка активной карточки на интерактивном холсте
-  document.querySelectorAll(".svg-node-group").forEach(g => {
-    const isCur = g.getAttribute("onclick") && g.getAttribute("onclick").includes(p.id);
-    const rect = g.querySelector(".svg-card-rect");
-    if (rect) {
-      if (isCur) {
-        rect.style.stroke = "var(--accent-seal)";
-        rect.style.strokeWidth = "3px";
-        rect.style.filter = "url(#card-hover-shadow)";
-      } else {
-        rect.style.stroke = "";
-        rect.style.strokeWidth = "";
-        rect.style.filter = "";
-      }
-    }
+  document.querySelectorAll(".canvas-node-card").forEach(card => {
+    card.classList.toggle("selected", card.getAttribute("data-person-id") === p.id);
   });
 
   const artCards = p.artifacts.map(aid => ARTIFACTS[aid]).filter(Boolean);
@@ -2260,35 +2455,35 @@ const CANVAS_COORDS = {
   "P-0015": { x: 1620, y: 70, side: "mat" },
 
   // Gen 6 (1820-1861)
-  "P-0010": { x: 1620, y: 260, side: "mat" },
+  "P-0010": { x: 1620, y: 270, side: "mat" },
 
   // Gen 5 (1860-1880)
-  "P-0020": { x: 780,  y: 460, side: "pat" },
-  "P-0009": { x: 1480, y: 460, side: "mat" },
-  "P-0014": { x: 1950, y: 460, side: "mat" },
+  "P-0020": { x: 560,  y: 480, side: "pat" },
+  "P-0009": { x: 1500, y: 480, side: "mat" },
+  "P-0014": { x: 2050, y: 480, side: "mat" },
 
   // Gen 4 (1888-1915)
-  "P-0017": { x: 320,  y: 690, side: "pat" },
-  "P-0018": { x: 660,  y: 690, side: "pat" },
-  "P-0019": { x: 960,  y: 690, side: "pat" },
-  "P-0012": { x: 1220, y: 690, side: "mat" },
-  "P-0007": { x: 1520, y: 690, side: "mat" },
-  "P-0008": { x: 1840, y: 690, side: "mat" },
-  "P-0013": { x: 2120, y: 690, side: "mat" },
+  "P-0017": { x: 80,   y: 720, side: "pat" },
+  "P-0018": { x: 460,  y: 720, side: "pat" },
+  "P-0019": { x: 840,  y: 720, side: "pat" },
+  "P-0012": { x: 1240, y: 720, side: "mat" },
+  "P-0007": { x: 1620, y: 720, side: "mat" },
+  "P-0008": { x: 2000, y: 720, side: "mat" },
+  "P-0013": { x: 2380, y: 720, side: "mat" },
 
   // Gen 3 (1926-1935)
-  "P-0005": { x: 380,  y: 930, side: "pat" },
-  "P-0016": { x: 700,  y: 930, side: "pat" },
-  "P-0004": { x: 1520, y: 930, side: "mat" },
-  "P-0006": { x: 1840, y: 930, side: "mat" },
+  "P-0005": { x: 180,  y: 980, side: "pat" },
+  "P-0016": { x: 580,  y: 980, side: "pat" },
+  "P-0004": { x: 1620, y: 980, side: "mat" },
+  "P-0006": { x: 2000, y: 980, side: "mat" },
 
   // Gen 2 (1953-1961)
-  "P-0003": { x: 660,  y: 1170, side: "pat" },
-  "P-0002": { x: 1520, y: 1170, side: "mat" },
-  "P-0011": { x: 1880, y: 1170, side: "mat" },
+  "P-0003": { x: 380,  y: 1240, side: "pat" },
+  "P-0002": { x: 1620, y: 1240, side: "mat" },
+  "P-0011": { x: 2050, y: 1240, side: "mat" },
 
   // Gen 1 (1988)
-  "P-0001": { x: 1100, y: 1390, side: "self" }
+  "P-0001": { x: 1000, y: 1490, side: "self" }
 };
 
 const CANVAS_MARRIAGES = [
@@ -2311,13 +2506,13 @@ const CANVAS_FILIAL = [
 ];
 
 const GEN_BANDS = [
-  { gen: "VII", label: "VII ПОКОЛЕНИЕ · РУБЕЖ XVIII–XIX вв. (~1795–1825)", y: 20, h: 160 },
-  { gen: "VI",  label: "VI ПОКОЛЕНИЕ · РЕФОРМА 1861 г. (ПАСПОРТ)", y: 200, h: 170 },
-  { gen: "V",   label: "V ПОКОЛЕНИЕ · КРЕСТЬЯНЕ КАЗАНСКОЙ ГУБЕРНИИ (1869–1870)", y: 390, h: 200 },
-  { gen: "IV",  label: "IV ПОКОЛЕНИЕ · ПЕРВАЯ МИРОВАЯ ВОЙНА (1888–1915)", y: 620, h: 210 },
-  { gen: "III", label: "III ПОКОЛЕНИЕ · СОВЕТСКАЯ АРМИЯ И ВОССТАНОВЛЕНИЕ (1926–1935)", y: 860, h: 210 },
-  { gen: "II",  label: "II ПОКОЛЕНИЕ · РОДИТЕЛИ И ДЯДЯ (1953–1961)", y: 1100, h: 190 },
-  { gen: "I",   label: "I ПОКОЛЕНИЕ · СУБЪЕКТ ИССЛЕДОВАНИЯ (1988)", y: 1320, h: 180 }
+  { gen: "VII", label: "VII ПОКОЛЕНИЕ · РУБЕЖ XVIII–XIX вв. (~1795–1825)", y: 20, h: 200 },
+  { gen: "VI",  label: "VI ПОКОЛЕНИЕ · РЕФОРМА 1861 г. (ПАСПОРТ И ФАМИЛИЯ)", y: 235, h: 190 },
+  { gen: "V",   label: "V ПОКОЛЕНИЕ · СТОЛЫПИНСКАЯ ЭПОХА И ВОЛЖСКИЕ КРЕСТЬЯНЕ (1869–1880)", y: 440, h: 220 },
+  { gen: "IV",  label: "IV ПОКОЛЕНИЕ · ПЕРВАЯ МИРОВАЯ ВОЙНА И КУСТАНАЙ (1888–1915)", y: 680, h: 230 },
+  { gen: "III", label: "III ПОКОЛЕНИЕ · СОВЕТСКАЯ АРМИЯ И ВОССТАНОВЛЕНИЕ (1926–1935)", y: 935, h: 230 },
+  { gen: "II",  label: "II ПОКОЛЕНИЕ · РОДИТЕЛИ И ДЯДЯ (1953–1961)", y: 1195, h: 220 },
+  { gen: "I",   label: "I ПОКОЛЕНИЕ · СУБЪЕКТ ИССЛЕДОВАНИЯ (1988)", y: 1445, h: 220 }
 ];
 
 let canvasState = {
@@ -2350,10 +2545,18 @@ function zoomCanvas(factor) {
 
 function resetCanvasZoom() {
   const vp = document.getElementById("canvas-viewport");
-  const vw = vp ? vp.clientWidth : 1000;
-  canvasState.scale = Math.min(vw / 2250, 0.88);
-  canvasState.x = (vw - 2250 * canvasState.scale) / 2;
-  canvasState.y = 15;
+  const vw = vp ? vp.clientWidth : 1200;
+  const isMobile = window.innerWidth <= 900;
+  
+  if (isMobile) {
+    canvasState.scale = Math.min(vw / 2800, 0.52);
+    canvasState.x = (vw - 2800 * canvasState.scale) / 2;
+    canvasState.y = -350 * canvasState.scale;
+  } else {
+    canvasState.scale = Math.min(vw / 2800, 0.82);
+    canvasState.x = (vw - 2800 * canvasState.scale) / 2;
+    canvasState.y = 10;
+  }
   updateCanvasTransform();
 }
 
@@ -2363,7 +2566,7 @@ function initCanvasPanZoom() {
 
   // --- МЫШЬ (DESKTOP) ---
   vp.addEventListener("mousedown", (e) => {
-    if (e.target.closest(".svg-node-group")) return;
+    if (e.target.closest(".canvas-node-card, .svg-node-foreign, .svg-node-group")) return;
     canvasState.isDragging = true;
     canvasState.startX = e.clientX - canvasState.x;
     canvasState.startY = e.clientY - canvasState.y;
@@ -2404,7 +2607,7 @@ function initCanvasPanZoom() {
   }
 
   vp.addEventListener("touchstart", (e) => {
-    if (e.target.closest(".svg-node-group")) return;
+    if (e.target.closest(".canvas-node-card, .svg-node-foreign, .svg-node-group")) return;
     if (e.touches.length === 1) {
       // Одиночное касание: панорамирование (1-finger drag)
       canvasState.isDragging = true;
@@ -2478,15 +2681,15 @@ function renderSvgCanvas() {
   if (bandsEl) {
     bandsEl.innerHTML = GEN_BANDS.map(b => `
       <g>
-        <rect class="svg-gen-band" x="20" y="${b.y}" width="2210" height="${b.h}" rx="6" ry="6"/>
+        <rect class="svg-gen-band" x="20" y="${b.y}" width="2760" height="${b.h}" rx="6" ry="6"/>
         <text class="svg-gen-label" x="35" y="${b.y + 22}">${b.label}</text>
       </g>
     `).join("");
   }
 
   // Card dimensions
-  const CW = 230;
-  const CH = 98;
+  const CW = 300;
+  const CH = 124;
 
   // 2. Direct filial lines
   let filialSvg = "";
@@ -2542,7 +2745,7 @@ function renderSvgCanvas() {
   const marrEl = document.getElementById("canvas-marriages-group");
   if (marrEl) marrEl.innerHTML = unionNodesSvg;
 
-  // 4. Render Nodes with Portrait Medallions and Cameos
+  // 4. Render Nodes using foreignObject with Full HTML/CSS Layout
   const nodesEl = document.getElementById("canvas-nodes-group");
   if (nodesEl) {
     nodesEl.innerHTML = Object.keys(CANVAS_COORDS).map(pid => {
@@ -2552,112 +2755,62 @@ function renderSvgCanvas() {
       const sideClass = coord.side;
       const badgeLabel = p.status === "strongly-corroborated" ? "В АРХИВАХ ✓" :
                          p.status === "corroborated" ? "ПОДТВЕРЖДЕНО ✓" :
-                         p.status === "single-source" ? "ИЗ ПАМЯТИ" : "ПОИСК В ЗАГС";
-      const badgeBg = p.status === "strongly-corroborated" ? "#D9EDE1" :
-                      p.status === "corroborated" ? "#DFE9F2" :
-                      p.status === "single-source" ? "#F5EAD2" : "#F6E4E4";
-      const badgeFg = p.status === "strongly-corroborated" ? "#1B4D3E" :
-                      p.status === "corroborated" ? "#1B3B5F" :
-                      p.status === "single-source" ? "#6B4E12" : "#7A2E2E";
-      const badgeW = 92;
+                         p.status === "single-source" ? "ИЗ ПАМЯТИ" : "АРХИВНЫЙ ПОИСК";
+      const badgeClass = p.badgeClass;
 
-      // Portrait or Cameo Medallion logic
-      const pr = 28; // radius
-      const pcx = 38;
-      const pcy = 53;
-      let portraitSvg = "";
-
+      // HTML Avatar logic
+      let avatarHtml = "";
       if (p.id === "P-0008") {
-        // Подлинный архивный портрет прабабушки Агриппины Александровны Беловой (1889-1971)
-        portraitSvg = `
-          <g>
-            <circle cx="${pcx}" cy="${pcy}" r="${pr + 3}" fill="#8C2D19" stroke="#EFE6CB" stroke-width="1.5" />
-            <circle cx="${pcx}" cy="${pcy}" r="${pr}" fill="url(#portrait-P-0008)" stroke="#8C2D19" stroke-width="1.5" />
-            <circle cx="${pcx + 19}" cy="${pcy + 19}" r="8.5" fill="#3A6B56" stroke="#FFFFFF" stroke-width="1.5" />
-            <text x="${pcx + 19}" y="${pcy + 22}" font-size="9" fill="#FFF" text-anchor="middle" font-weight="bold">📷</text>
-          </g>
+        avatarHtml = `
+          <img class="card-avatar-img" src="photos/portrait-agripina-belova-oval.jpg" alt="${p.name}">
+          <div class="card-avatar-badge" title="Подлинная фотография 1960-х гг.">📷</div>
         `;
       } else if (p.id === "P-0005") {
-        // Дед майор автобата (офицерская фуражка / звезда)
-        portraitSvg = `
-          <g>
-            <circle cx="${pcx}" cy="${pcy}" r="${pr}" fill="#E2EBF2" stroke="#2D5A88" stroke-width="2" />
-            <text x="${pcx}" y="${pcy - 3}" font-size="20" text-anchor="middle">🎖️</text>
-            <text x="${pcx}" y="${pcy + 15}" font-family="var(--font-mono)" font-size="8.5" font-weight="bold" fill="#2D5A88" text-anchor="middle">МАЙОР</text>
-          </g>
+        avatarHtml = `
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span class="card-avatar-emoji">🎖️</span>
+            <span class="card-avatar-rank">МАЙОР</span>
+          </div>
         `;
       } else if (p.id === "P-0007") {
-        // Прадед ветеран Первой мировой (127-й пехотный полк)
-        portraitSvg = `
-          <g>
-            <circle cx="${pcx}" cy="${pcy}" r="${pr}" fill="#F4EAE0" stroke="#8C2D19" stroke-width="2" />
-            <text x="${pcx}" y="${pcy - 3}" font-size="20" text-anchor="middle">⚔️</text>
-            <text x="${pcx}" y="${pcy + 15}" font-family="var(--font-mono)" font-size="8.5" font-weight="bold" fill="#8C2D19" text-anchor="middle">1914 г.</text>
-          </g>
+        avatarHtml = `
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <span class="card-avatar-emoji">⚔️</span>
+            <span class="card-avatar-rank" style="color:#8C2D19;">1914 г.</span>
+          </div>
         `;
       } else if (p.id === "P-0010" || p.id === "P-0015" || p.id === "P-0009") {
-        // Старейшины волжского рода (паспорт 1861 г., основатели)
-        portraitSvg = `
-          <g>
-            <circle cx="${pcx}" cy="${pcy}" r="${pr}" fill="#EFE8D8" stroke="#8C7A60" stroke-width="1.8" />
-            <text x="${pcx}" y="${pcy + 7}" font-size="25" text-anchor="middle">👴</text>
-          </g>
-        `;
-      } else if (p.id === "P-0016" || p.id === "P-0002" || p.id === "P-0006") {
-        // Женский силуэт рода
-        portraitSvg = `
-          <g>
-            <circle cx="${pcx}" cy="${pcy}" r="${pr}" fill="#F9EDE6" stroke="#BD826C" stroke-width="1.8" />
-            <text x="${pcx}" y="${pcy + 7}" font-size="25" text-anchor="middle">👩</text>
-          </g>
-        `;
+        avatarHtml = `<span class="card-avatar-emoji">👴</span>`;
+      } else if (p.id === "P-0016" || p.id === "P-0018" || p.id === "P-0002" || p.id === "P-0006" || p.id === "P-0013") {
+        avatarHtml = `<span class="card-avatar-emoji">👩</span>`;
       } else if (p.id === "P-0001") {
-        // Субъект исследования (Антон)
-        portraitSvg = `
-          <g>
-            <circle cx="${pcx}" cy="${pcy}" r="${pr + 2.5}" fill="#C7B47C" stroke="#8C2D19" stroke-width="2" />
-            <circle cx="${pcx}" cy="${pcy}" r="${pr}" fill="#FCF9EE" />
-            <text x="${pcx}" y="${pcy + 7}" font-size="25" text-anchor="middle">👤</text>
-          </g>
-        `;
+        avatarHtml = `<span class="card-avatar-emoji">👤</span>`;
       } else {
-        // Мужской силуэт рода
-        portraitSvg = `
-          <g>
-            <circle cx="${pcx}" cy="${pcy}" r="${pr}" fill="#E8EEF4" stroke="#6F8EA9" stroke-width="1.8" />
-            <text x="${pcx}" y="${pcy + 7}" font-size="25" text-anchor="middle">👨</text>
-          </g>
-        `;
+        avatarHtml = `<span class="card-avatar-emoji">👨</span>`;
       }
 
-      const tx = 76; // text starts after portrait medallion
+      // Compact dates for card without losing tooltip full text
+      const cleanDates = p.dates.replace(/\s*\([^)]*\)/g, '').trim();
+      const cardPlace = p.place ? ('📍 ' + p.place) : '';
 
       return `
-        <g class="svg-node-group" transform="translate(${coord.x}, ${coord.y})" onclick="selectPerson('${p.id}')">
-          <rect class="svg-card-rect ${sideClass}" width="${CW}" height="${CH}" rx="8" ry="8" />
-          
-          <!-- Портретный медальон -->
-          ${portraitSvg}
-
-          <!-- ID и дружелюбная плашка подтверждения -->
-          <text style="font-family:var(--font-mono);font-size:10px;font-weight:700;fill:#857E70;" x="${tx}" y="20">${p.id}</text>
-          <rect x="${CW - badgeW - 10}" y="8" width="${badgeW}" height="18" rx="4" ry="4" fill="${badgeBg}" stroke="rgba(0,0,0,0.08)" />
-          <text text-anchor="middle" style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:0.04em;fill:${badgeFg};" x="${CW - badgeW/2 - 10}" y="20">${badgeLabel}</text>
-          
-          <!-- Роль в семье -->
-          <text style="font-size:10px;font-weight:700;letter-spacing:0.03em;fill:#8C2D19;text-transform:uppercase;" x="${tx}" y="38">
-            ${p.role.length > 25 ? p.role.substring(0, 24) + "…" : p.role}
-          </text>
-          
-          <!-- Имя и фамилия предка -->
-          <text style="font-family:var(--font-serif);font-size:13.5px;font-weight:700;fill:#181715;" x="${tx}" y="58">
-            ${p.name.length > 22 ? p.name.substring(0, 21) + "…" : p.name}
-          </text>
-          
-          <!-- Даты жизни и локация -->
-          <text style="font-family:var(--font-mono);font-size:10.5px;font-weight:600;fill:#5F584C;" x="${tx}" y="76">${p.dates}</text>
-          <text style="font-size:9.5px;fill:#857E70;" x="${tx}" y="92">${p.place.length > 28 ? p.place.substring(0, 27) + "…" : p.place}</text>
-        </g>
+        <foreignObject class="svg-node-foreign" x="${coord.x}" y="${coord.y}" width="${CW}" height="${CH}">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="canvas-node-card ${sideClass}" data-person-id="${p.id}" onclick="selectPerson('${p.id}')">
+            <div class="card-avatar-wrap">
+              ${avatarHtml}
+            </div>
+            <div class="card-content-wrap">
+              <div class="card-meta-row">
+                <span class="card-id">${p.id}</span>
+                <span class="card-badge ${badgeClass}">${badgeLabel}</span>
+              </div>
+              <div class="card-role" title="${p.role}">${p.role}</div>
+              <div class="card-name" title="${p.name}">${p.name}</div>
+              <div class="card-dates" title="${p.dates}">${cleanDates}</div>
+              <div class="card-place" title="${p.place}">${cardPlace}</div>
+            </div>
+          </div>
+        </foreignObject>
       `;
     }).join("");
   }
